@@ -5,16 +5,21 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+/*
+ * This class will be refactored in the future to delegate drawing to a
+ * LayerManager so that multiple layers can be composited together.
+ * {@link #getGraphicsContext()} will return the currently
+ * active layer GraphicsContext rather than the single backing canvas.
+ */
 public class CanvasManager {
 
-    private static final double DEFAULT_WIDTH = 800;
-    private static final double DEFAULT_HEIGHT = 600;
+    public static final double CANVAS_SIZE = 1024;
 
     private final Canvas canvas;
     private final GraphicsContext gc;
 
     public CanvasManager() {
-        canvas = new Canvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        canvas = new Canvas(CANVAS_SIZE, CANVAS_SIZE);
         gc = canvas.getGraphicsContext2D();
         clear();
     }
@@ -30,16 +35,6 @@ public class CanvasManager {
     public void clear() {
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-    }
-
-    public void resize(double width, double height) {
-        WritableImage snapshot = getSnapshot();
-
-        canvas.setWidth(width);
-        canvas.setHeight(height);
-
-        clear();
-        gc.drawImage(snapshot, 0, 0);
     }
 
     public WritableImage getSnapshot() {

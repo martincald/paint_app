@@ -1,17 +1,16 @@
 package com.martinpaint.tools;
 
 import com.martinpaint.color.ColorManager;
+import javafx.scene.Node;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public abstract class Tool {
 
     protected ColorManager colorManager;
-    protected double brushSize;
 
-    public void configure(ColorManager colorManager, double brushSize) {
+    public void configure(ColorManager colorManager) {
         this.colorManager = colorManager;
-        this.brushSize = brushSize;
     }
 
     public abstract void onMousePressed(double x, double y, GraphicsContext gc);
@@ -23,4 +22,7 @@ public abstract class Tool {
     public abstract String getName();
 
     public abstract Image getIcon();
+
+    // returns the tool's configuration UI
+    public abstract Node getSettingsPanel();
 }

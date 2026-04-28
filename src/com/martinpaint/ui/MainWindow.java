@@ -6,11 +6,9 @@ import com.martinpaint.io.FileManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class MainWindow {
@@ -30,26 +28,10 @@ public class MainWindow {
     private void buildUI() {
         CanvasManager canvasManager = controller.getCanvasManager();
         FileManager fileManager = controller.getFileManager();
-        Canvas canvas = canvasManager.getCanvas();
 
-        //Wrap canvas in a pane so it can resize with the window
-        Pane canvasPane = new Pane(canvas);
-        root.setCenter(canvasPane);
-
-        //Bind the canvas size to the available space in the center pane
-        //Only resize from the pane's size changes to prevent feedback loops
-        canvasPane.widthProperty().addListener((obs, oldVal, newVal) -> {
-            double newWidth = newVal.doubleValue();
-            if (Math.abs(canvas.getWidth() - newWidth) > 1) {
-                canvasManager.resize(newWidth, canvas.getHeight());
-            }
-        });
-        canvasPane.heightProperty().addListener((obs, oldVal, newVal) -> {
-            double newHeight = newVal.doubleValue();
-            if (Math.abs(canvas.getHeight() - newHeight) > 1) {
-                canvasManager.resize(canvas.getWidth(), newHeight);
-            }
-        });
+        // Scrollable, zoomable canvas viewport in the center
+        CanvasViewport viewport = new CanvasViewport(canvasManager);
+        root.setCenter(viewport);
 
         //Panel on the left
         SidePanel sidePanel = new SidePanel(controller);
@@ -69,7 +51,7 @@ public class MainWindow {
     }
 
     public void show() {
-        Scene scene = new Scene(root, 900, 650);
+        Scene scene = new Scene(root, 1400, 900);
         stage.setTitle("PaintApp");
         stage.setScene(scene);
         stage.show();

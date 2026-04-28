@@ -1,11 +1,16 @@
 package com.martinpaint.tools;
 
 import com.martinpaint.io.ImageLoader;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayDeque;
@@ -13,7 +18,15 @@ import java.util.Deque;
 
 public class FillTool extends Tool {
 
-    private static final int TOLERANCE = 5;
+    private int tolerance = 5;
+
+    public int getTolerance() {
+        return tolerance;
+    }
+
+    public void setTolerance(int tolerance) {
+        this.tolerance = tolerance;
+    }
 
     @Override
     public void onMousePressed(double x, double y, GraphicsContext gc) {
@@ -91,11 +104,31 @@ public class FillTool extends Tool {
         return ImageLoader.load("resources/images/bucket.png");
     }
 
+    @Override
+    public Node getSettingsPanel() {
+        Label toleranceLabel = new Label("Tolerance: " + this.tolerance);
+        toleranceLabel.setStyle("-fx-text-fill: #AAAAAA;");
+
+        Slider toleranceSlider = new Slider(0, 50, this.tolerance);
+        toleranceSlider.setStyle(
+                "-fx-control-inner-background: #3C3F41;" +
+                "-fx-accent: #5294E2;"
+        );
+        toleranceSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            this.tolerance = newVal.intValue();
+            toleranceLabel.setText("Tolerance: " + this.tolerance);
+        });
+
+        VBox panel = new VBox(8, toleranceLabel, toleranceSlider);
+        panel.setPadding(new Insets(4));
+        return panel;
+    }
+
     private boolean colorsMatch(Color a, Color b) {
-        return Math.abs(to255(a.getRed()) - to255(b.getRed())) <= TOLERANCE
-                && Math.abs(to255(a.getGreen()) - to255(b.getGreen())) <= TOLERANCE
-                && Math.abs(to255(a.getBlue()) - to255(b.getBlue())) <= TOLERANCE
-                && Math.abs(to255(a.getOpacity()) - to255(b.getOpacity())) <= TOLERANCE;
+        return Math.abs(to255(a.getRed()) - to255(b.getRed())) <= this.tolerance
+                && Math.abs(to255(a.getGreen()) - to255(b.getGreen())) <= this.tolerance
+                && Math.abs(to255(a.getBlue()) - to255(b.getBlue())) <= this.tolerance
+                && Math.abs(to255(a.getOpacity()) - to255(b.getOpacity())) <= this.tolerance;
     }
 
     private int to255(double channel) {
