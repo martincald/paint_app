@@ -2,58 +2,88 @@ package com.martinpaint.ui;
 
 import com.martinpaint.app.AppController;
 import com.martinpaint.canvas.CanvasManager;
-import com.martinpaint.io.FileManager;
-import javafx.geometry.Insets;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.awt.Taskbar;
+import java.io.InputStream;
+
+// Main window of the application.
 
 public class MainWindow {
 
     private final AppController controller;
     private final Stage stage;
-    private final BorderPane root;
+    private final StackPane root;
 
     public MainWindow(AppController controller) {
         this.controller = controller;
         this.stage = controller.getStage();
-        this.root = new BorderPane();
+        this.root = new StackPane();
 
         buildUI();
     }
 
     private void buildUI() {
-        CanvasManager canvasManager = controller.getCanvasManager();
-        FileManager fileManager = controller.getFileManager();
-
-        // Scrollable, zoomable canvas viewport in the center
-        CanvasViewport viewport = new CanvasViewport(canvasManager);
-        root.setCenter(viewport);
-
-        //Panel on the left
+        CanvasViewport viewport = new CanvasViewport(controller.getCanvasManager());
         SidePanel sidePanel = new SidePanel(controller);
-        root.setLeft(sidePanel);
-
-        //Import / export buttons
-        Button exportButton = new Button("Export PNG");
-        exportButton.setOnAction(event -> fileManager.exportPNG(stage, canvasManager));
-
-        Button importButton = new Button("Import PNG");
-        importButton.setOnAction(event -> fileManager.importPNG(stage, canvasManager));
-
-        HBox buttonBar = new HBox(10, importButton, exportButton);
-        buttonBar.setAlignment(Pos.CENTER_RIGHT);
-        buttonBar.setPadding(new Insets(8));
-        root.setTop(buttonBar);
+        StackPane.setAlignment(viewport, Pos.TOP_LEFT);
+        StackPane.setAlignment(sidePanel, Pos.TOP_LEFT);
+        root.getChildren().addAll(viewport, sidePanel);
     }
 
     public void show() {
         Scene scene = new Scene(root, 1400, 900);
-        stage.setTitle("PaintApp");
+        scene.setFill(Color.web("#3A3A3A"));
+        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+
+        CanvasManager canvasManager = controller.getCanvasManager();
+
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN),
+                canvasManager::undo
+        );
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
+                canvasManager::redo
+        );
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN),
+                canvasManager::redo
+        );
+
+        stage.setTitle("Paint App");
+        loadAppIcon();
+
+        AppMenuBar menuBar = new AppMenuBar(controller, stage);
+        root.getChildren().add(menuBar);
+        StackPane.setAlignment(menuBar, Pos.TOP_CENTER);
+
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void loadAppIcon() {
+        InputStream iconStream = getClass().getResourceAsStream("/resources/images/app_icon.png");
+        if (iconStream == null) {
+            System.err.println("[Warning] app_icon.png not found in classpath resources.");
+            return;
+        }
+        Image appIcon = new Image(iconStream);
+        stage.getIcons().add(appIcon);
+        if (Taskbar.isTaskbarSupported()) {
+            Taskbar taskbar = Taskbar.getTaskbar();
+            if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
+                taskbar.setIconImage(SwingFXUtils.fromFXImage(appIcon, null));
+            }
+        }
     }
 }

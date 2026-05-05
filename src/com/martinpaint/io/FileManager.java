@@ -15,6 +15,8 @@ import java.io.File;
 
 public class FileManager {
 
+    // File manager class.
+
     public void exportPNG(Stage stage, CanvasManager canvasManager) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export PNG");
@@ -29,7 +31,7 @@ public class FileManager {
         }
 
         try {
-            WritableImage snapshot = canvasManager.getSnapshot();
+            WritableImage snapshot = canvasManager.snapshotUnscaled();
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(snapshot, null);
             ImageIO.write(bufferedImage, "png", file);
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package com.martinpaint.tools;
 
 import com.martinpaint.canvas.CanvasManager;
 import com.martinpaint.color.ColorManager;
+import com.martinpaint.app.HapticFeedback;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.Canvas;
@@ -9,6 +10,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 import java.util.List;
 
+// Tool manager.
 public class ToolManager {
 
     private final CanvasManager canvasManager;
@@ -21,7 +23,7 @@ public class ToolManager {
         this.canvasManager = canvasManager;
         this.colorManager = colorManager;
 
-        tools = List.of(new BrushTool(), new EraserTool(), new FillTool());
+        tools = List.of(new BrushTool(), new EraserTool(), new FillTool(), new EyeDropperTool());
         activeTool.set(tools.getFirst());
 
         attachCanvasListeners();
@@ -30,7 +32,10 @@ public class ToolManager {
     public void setActiveTool(String name) {
         for (Tool tool : tools) {
             if (tool.getName().equals(name)) {
-                activeTool.set(tool);
+                if (tool != activeTool.get()) {
+                    activeTool.set(tool);
+                    HapticFeedback.toolSwitch();
+                }
                 return;
             }
         }
@@ -53,8 +58,13 @@ public class ToolManager {
         GraphicsContext gc = canvasManager.getGraphicsContext();
 
         canvas.setOnMousePressed(event -> {
-            activeTool.get().configure(colorManager);
-            activeTool.get().onMousePressed(event.getX(), event.getY(), gc);
+            Tool tool = activeTool.get();
+            tool.configure(colorManager);
+            // Eye-dropper does not draw, so no undo state is needed.
+            if (!(tool instanceof EyeDropperTool)) {
+                canvasManager.saveStateForUndo();
+            }
+            tool.onMousePressed(event.getX(), event.getY(), gc);
         });
 
         canvas.setOnMouseDragged(event -> {

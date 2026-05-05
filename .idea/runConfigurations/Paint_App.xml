@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Paint App" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.martinpaint.Main" />
+    <option name="VM_PARAMETERS" value="-Xdock:name=&quot;Paint App&quot; -Xdock:icon=resources/images/app_icon.png" />
+    <module name="Paint App" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

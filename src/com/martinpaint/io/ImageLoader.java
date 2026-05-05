@@ -3,35 +3,24 @@ package com.martinpaint.io;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
-import java.io.File;
+import java.io.InputStream;
 
-//image loading utility, all images should be in the resources/images folder
+// Loads images from the classpath
 public final class ImageLoader {
 
-    private static final String IMAGES_DIR = "Resources/Images/";
-
-    private ImageLoader() {
-    }
-
+    private ImageLoader() {}
 
     public static Image load(String path) {
-        String filename = path;
-        int lastSeparator = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
-        if (lastSeparator >= 0) {
-            filename = path.substring(lastSeparator + 1);
-        }
+        String resourcePath = path.startsWith("/") ? path : "/" + path;
 
-        File file = new File(IMAGES_DIR + filename);
-        if (!file.exists()) {
-            System.err.println("img not found" + file.getAbsolutePath());
-            return new WritableImage(16, 16);
-        }
-
-        try {
-            return new Image(file.toURI().toString());
+        try (InputStream is = ImageLoader.class.getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                System.err.println("[Error] Resource not found: " + resourcePath);
+                return new WritableImage(16, 16);
+            }
+            return new Image(is);
         } catch (Exception e) {
-            System.err.println("failed to get img: " + file.getAbsolutePath()
-                    + " — " + e.getMessage());
+            System.err.println("[Error] Failed to load image: " + resourcePath + " — " + e.getMessage());
             return new WritableImage(16, 16);
         }
     }

@@ -1,6 +1,8 @@
 package com.martinpaint.ui;
 
+import com.martinpaint.color.ColorHistory;
 import com.martinpaint.color.ColorManager;
+import com.martinpaint.color.ColorUtils;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -9,121 +11,107 @@ import javafx.scene.Cursor;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 
-//Dark panel shoing the color history
+// Recently used color slots.
 public class ColorHistoryPanel extends VBox {
 
-    private static final int HISTORY_SIZE = 5;
-    private static final double CIRCLE_RADIUS = 18.0;
-    private static final Color STROKE_COLOR = Color.rgb(200, 200, 200, 0.6);
+    private static final int    HISTORY_SIZE = 5;
+    private static final double SLOT_SIZE    = 70.0;
 
     private final ColorManager colorManager;
-    private final Circle[] historyCircles = new Circle[HISTORY_SIZE];
-    private final ColorPicker hiddenPicker = new ColorPicker();
+    private final Region[]     historyTiles = new Region[HISTORY_SIZE];
+    private final ColorPicker  hiddenPicker = new ColorPicker();
 
     public ColorHistoryPanel(ColorManager colorManager) {
         this.colorManager = colorManager;
 
-        setSpacing(8);
-        setPadding(new Insets(8));
+        setSpacing(12);
+        setPadding(new Insets(4, 0, 4, 0));
         setFillWidth(true);
-        setStyle("-fx-background-color: transparent;");
+        setAlignment(Pos.TOP_CENTER);
 
         Label title = new Label("Color Selector");
-        title.setStyle(
-                "-fx-text-fill: #e0e0e0;" +
-                        "-fx-font-size: 13px;" +
-                        "-fx-font-weight: bold;"
-        );
+        title.getStyleClass().add("section-title");
 
         GridPane grid = new GridPane();
-        grid.setHgap(8);
-        grid.setVgap(8);
+        grid.setHgap(10);
+        grid.setVgap(10);
         grid.setAlignment(Pos.CENTER);
 
-        // First 5 cells: history circles
         for (int i = 0; i < HISTORY_SIZE; i++) {
-            Circle circle = createHistoryCircle(Color.WHITE);
-            historyCircles[i] = circle;
-            int col = i % 3;
-            int row = i / 3;
-            grid.add(wrapCell(circle), col, row);
+            historyTiles[i] = createColorTile();
+            grid.add(historyTiles[i], i % 3, i / 3);
         }
+        grid.add(createAddTile(), 2, 1);
 
-        // 6th cell: + button
-        StackPane addButton = createAddButton();
-        grid.add(addButton, 2, 1);
-
-        // hidden color picker
         hiddenPicker.setVisible(false);
         hiddenPicker.setManaged(false);
-        hiddenPicker.setOnAction(e -> {
+        hiddenPicker.setOnAction(_ -> {
             Color picked = hiddenPicker.getValue();
-            if (picked != null) {
-                colorManager.setCurrentColor(picked);
-            }
+            if (picked != null) colorManager.setCurrentColor(picked);
         });
 
         getChildren().addAll(title, grid, hiddenPicker);
 
         refreshFromHistory();
-
-        // bind to the observable list so history changes auto-refresh UI
         ObservableList<Color> colors = colorManager.getColorHistory().getColors();
-        colors.addListener((ListChangeListener<Color>) c -> refreshFromHistory());
+        colors.addListener((ListChangeListener<Color>) _ -> refreshFromHistory());
     }
 
-    private Circle createHistoryCircle(Color fill) {
-        Circle circle = new Circle(CIRCLE_RADIUS);
-        circle.setFill(fill);
-        circle.setStroke(STROKE_COLOR);
-        circle.setStrokeWidth(1.0);
-        circle.setCursor(Cursor.HAND);
-        circle.setOnMouseClicked(e -> {
-            Paint paint = circle.getFill();
-            if (paint instanceof Color) {
-                colorManager.setCurrentColor((Color) paint);
-            }
+    private Region createColorTile() {
+        Region tile = new Region();
+        tile.getStyleClass().add("color-slot");
+        tile.setPrefSize(SLOT_SIZE, SLOT_SIZE);
+        tile.setMinSize(SLOT_SIZE, SLOT_SIZE);
+        tile.setMaxSize(SLOT_SIZE, SLOT_SIZE);
+        tile.setOnMouseClicked(_ -> {
+            Color stored = (Color) tile.getUserData();
+            if (stored != null) colorManager.setCurrentColor(stored);
         });
-        return circle;
+        applyFill(tile, null);
+        return tile;
     }
 
-    private StackPane wrapCell(Circle circle) {
-        StackPane cell = new StackPane(circle);
-        cell.setPrefSize(CIRCLE_RADIUS * 2 + 4, CIRCLE_RADIUS * 2 + 4);
-        return cell;
-    }
-
-    private StackPane createAddButton() {
-        Circle bg = new Circle(CIRCLE_RADIUS);
-        bg.setFill(Color.WHITE);
-        bg.setStroke(STROKE_COLOR);
-        bg.setStrokeWidth(1.0);
+    private StackPane createAddTile() {
+        Region bg = new Region();
+        bg.getStyleClass().add("color-slot-add");
+        bg.setPrefSize(SLOT_SIZE, SLOT_SIZE);
+        bg.setMinSize(SLOT_SIZE, SLOT_SIZE);
+        bg.setMaxSize(SLOT_SIZE, SLOT_SIZE);
+        bg.setStyle("-fx-background-color: #FFFFFF;");
 
         Label plus = new Label("+");
-        plus.setStyle(
-                "-fx-text-fill: black;" +
-                        "-fx-font-size: 20px;" +
-                        "-fx-font-weight: bold;"
-        );
+        plus.getStyleClass().add("color-add-plus");
 
         StackPane pane = new StackPane(bg, plus);
         pane.setCursor(Cursor.HAND);
-        pane.setPrefSize(CIRCLE_RADIUS * 2 + 4, CIRCLE_RADIUS * 2 + 4);
-        pane.setOnMouseClicked(e -> hiddenPicker.show());
+        pane.setPrefSize(SLOT_SIZE, SLOT_SIZE);
+        pane.setOnMouseClicked(_ -> hiddenPicker.show());
         return pane;
     }
 
+    // null color = empty slot which cannot be clicked
+    private void applyFill(Region tile, Color color) {
+        tile.setUserData(color);
+        if (color == null) {
+            tile.setStyle("-fx-background-color: #2E2E2E;");
+            tile.setCursor(Cursor.DEFAULT);
+        } else {
+            tile.setStyle("-fx-background-color: " + ColorUtils.toWebHex(color) + ";");
+            tile.setCursor(Cursor.HAND);
+        }
+    }
+
     private void refreshFromHistory() {
-        ObservableList<Color> colors = colorManager.getColorHistory().getColors();
+        ColorHistory history = colorManager.getColorHistory();
+        ObservableList<Color> colors = history.getColors();
         for (int i = 0; i < HISTORY_SIZE; i++) {
-            Color c = i < colors.size() ? colors.get(i) : Color.WHITE;
-            historyCircles[i].setFill(c);
+            Color c = i < colors.size() ? colors.get(i) : null;
+            applyFill(historyTiles[i], c);
         }
     }
 }

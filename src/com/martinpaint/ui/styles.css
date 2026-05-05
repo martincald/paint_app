@@ -1,0 +1,183 @@
+/* color styles for the application */
+/* Color tokens.*/
+.root {
+    -fx-bg-app:        #3A3A3A;   /* gray void behind canvas + panel */
+    -fx-bg-panel:      #2B2B2B;   /* side panel background           */
+    -fx-bg-slot:       #3C3F41;   /* tool slot background            */
+    -fx-bg-slot-empty: #34373A;   /* placeholder slot background     */
+    -fx-bg-button:     #F2F2F2;   /* light primary button background */
+    -fx-bg-button-hover:#FFFFFF;
+    -fx-accent-blue:   #5294E2;   /* selected tool highlight         */
+    -fx-text-primary:  #ECECEC;
+    -fx-text-secondary:#BFBFBF;
+    -fx-text-on-light: #1E1E1E;
+    -fx-divider:       #FFFFFF;
+
+    -fx-font-family: "Inter", "Helvetica Neue", "SF Pro Text", "Segoe UI", Arial, sans-serif;
+    -fx-background-color: -fx-bg-app;
+}
+
+/* Side panel*/
+.side-panel-root {
+    -fx-background-color: transparent;
+}
+
+.side-panel-menu {
+    -fx-background-color: -fx-bg-panel;
+}
+
+.side-panel-scroll {
+    -fx-background: -fx-bg-panel;
+    -fx-background-color: -fx-bg-panel;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+.side-panel-scroll > .viewport {
+    -fx-background-color: -fx-bg-panel;
+}
+.side-panel-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 6;
+}
+.side-panel-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #555;
+    -fx-background-radius: 3;
+}
+.side-panel-scroll .scroll-bar:vertical .track,
+.side-panel-scroll .scroll-bar:vertical .increment-button,
+.side-panel-scroll .scroll-bar:vertical .decrement-button,
+.side-panel-scroll .scroll-bar:vertical .increment-arrow,
+.side-panel-scroll .scroll-bar:vertical .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-shape: " ";
+}
+
+/* section dividers */
+.divider {
+    -fx-background-color: -fx-divider;
+    -fx-pref-height: 1;
+    -fx-min-height: 1;
+    -fx-max-height: 1;
+    -fx-opacity: 0.85;
+}
+
+
+/* Section titles*/
+.section-title {
+    -fx-text-fill: -fx-text-primary;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 0 0 4 0;
+}
+
+/* PRIMARY BUTTONS Export and import*/
+.primary-button {
+    -fx-background-color: -fx-bg-button;
+    -fx-text-fill: -fx-text-on-light;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 10 16 10 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 6, 0, 0, 1);
+}
+.primary-button:hover  { -fx-background-color: -fx-bg-button-hover; }
+.primary-button:pressed{ -fx-background-color: #E0E0E0; }
+
+/* Tool slots */
+.tool-slot {
+    -fx-background-color: -fx-bg-slot;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: transparent;
+    -fx-padding: 8;
+    -fx-cursor: hand;
+}
+.tool-slot:hover { -fx-background-color: derive(-fx-bg-slot, 12%); }
+
+.tool-slot:selected {
+    -fx-background-color: -fx-accent-blue;
+    -fx-background-radius: 8;
+}
+.tool-slot:selected:hover { -fx-background-color: derive(-fx-accent-blue, -8%); }
+
+.tool-slot-empty {
+    -fx-background-color: -fx-bg-slot-empty;
+    -fx-background-radius: 8;
+    -fx-opacity: 0.4;
+}
+
+/*  7. Tool-settings placeholder text  */
+.placeholder-text {
+    -fx-text-fill: -fx-text-secondary;
+    -fx-font-size: 13px;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
+
+/*  8. Slider (Tool settings)  */
+.size-label {
+    -fx-text-fill: -fx-text-secondary;
+    -fx-font-size: 13px;
+}
+.slider .track   { -fx-background-color: #444; -fx-background-radius: 3; }
+.slider .thumb   { -fx-background-color: -fx-text-primary; -fx-background-radius: 50%; }
+.slider:focused .thumb { -fx-background-color: -fx-accent-blue; }
+
+/*  9. Color slots (rounded squares)  */
+.color-slot,
+.color-slot-add {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: rgba(255,255,255,0.10);
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+.color-slot:hover,
+.color-slot-add:hover {
+    -fx-border-color: rgba(255,255,255,0.45);
+}
+
+/*  + symbol on the add tile */
+.color-add-plus {
+    -fx-text-fill: -fx-text-on-light;
+    -fx-font-size: 30px;
+    -fx-font-weight: 200;
+}
+
+/*  10. Toggle button  */
+.panel-toggle {
+    -fx-background-color: -fx-bg-panel;
+    -fx-text-fill: -fx-text-primary;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 0 8 8 0;
+    -fx-border-color: transparent;
+    -fx-padding: 16 5 16 5;
+    -fx-cursor: hand;
+}
+.panel-toggle:hover { -fx-background-color: derive(-fx-bg-panel, 10%); }
+
+/*  11. Canvas viewport (gray workspace)  */
+.canvas-viewport,
+.canvas-viewport > .viewport {
+    -fx-background: -fx-bg-app;
+    -fx-background-color: -fx-bg-app;
+    -fx-border-color: transparent;
+}
+.canvas-workspace {
+    -fx-background-color: -fx-bg-app;
+}
+.canvas-viewport .scroll-bar:vertical,
+.canvas-viewport .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+    -fx-pref-height: 8;
+}
+.canvas-viewport .scroll-bar .thumb {
+    -fx-background-color: #555;
+    -fx-background-radius: 4;
+}

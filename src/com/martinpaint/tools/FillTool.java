@@ -1,137 +1,98 @@
 package com.martinpaint.tools;
 
+import com.martinpaint.canvas.CanvasManager;
+import com.martinpaint.color.ColorUtils;
 import com.martinpaint.io.ImageLoader;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+// Bucket fill via iterative flood-fill on an int[] ARGB buffer
 public class FillTool extends Tool {
 
-    private int tolerance = 5;
+    private int tolerance = 30;
 
-    public int getTolerance() {
-        return tolerance;
-    }
-
-    public void setTolerance(int tolerance) {
-        this.tolerance = tolerance;
-    }
+    public int getTolerance() { return tolerance; }
+    public void setTolerance(int tolerance) { this.tolerance = tolerance; }
 
     @Override
     public void onMousePressed(double x, double y, GraphicsContext gc) {
+        if (colorManager == null) return;
+
         int startX = (int) x;
         int startY = (int) y;
-
-        int width = (int) gc.getCanvas().getWidth();
+        int width  = (int) gc.getCanvas().getWidth();
         int height = (int) gc.getCanvas().getHeight();
+        if (startX < 0 || startX >= width || startY < 0 || startY >= height) return;
 
-        if (startX < 0 || startX >= width || startY < 0 || startY >= height) {
-            return;
-        }
-
-        WritableImage snapshot = gc.getCanvas().snapshot(null, null);
-        PixelReader reader = snapshot.getPixelReader();
-        PixelWriter writer = snapshot.getPixelWriter();
-
-        Color targetColor = reader.getColor(startX, startY);
         Color fillColor = colorManager.getCurrentColor();
+        if (fillColor == null) return;
 
-        if (colorsMatch(targetColor, fillColor)) {
-            return;
-        }
+        WritableImage snapshot = CanvasManager.snapshotUnscaled(gc.getCanvas());
+        PixelReader reader = snapshot.getPixelReader();
+        if (reader == null) return;
 
-        boolean[][] visited = new boolean[width][height];
-        Deque<int[]> stack = new ArrayDeque<>();
-        stack.push(new int[]{startX, startY});
+        int[] pixels = new int[width * height];
+        reader.getPixels(0, 0, width, height, PixelFormat.getIntArgbInstance(), pixels, 0, width);
 
-        while (!stack.isEmpty()) {
-            int[] pixel = stack.pop();
-            int px = pixel[0];
-            int py = pixel[1];
+        int fillArgb   = ColorUtils.toArgb(fillColor);
+        int targetArgb = pixels[startY * width + startX];
+        if (fillArgb == targetArgb) return;
 
-            if (px < 0 || px >= width || py < 0 || py >= height) {
-                continue;
-            }
-            if (visited[px][py]) {
-                continue;
-            }
-            visited[px][py] = true;
+        floodFill(pixels, width, height, startX, startY, targetArgb, fillArgb);
 
-            Color currentColor = reader.getColor(px, py);
-            if (!colorsMatch(currentColor, targetColor)) {
-                continue;
-            }
-
-            writer.setColor(px, py, fillColor);
-
-            stack.push(new int[]{px + 1, py});
-            stack.push(new int[]{px - 1, py});
-            stack.push(new int[]{px, py + 1});
-            stack.push(new int[]{px, py - 1});
-        }
-
+        snapshot.getPixelWriter().setPixels(0, 0, width, height,
+                PixelFormat.getIntArgbInstance(), pixels, 0, width);
         gc.drawImage(snapshot, 0, 0);
     }
 
     @Override
-    public void onMouseDragged(double x, double y, GraphicsContext gc) {
-        //Placeholder for future fill functionality
-    }
+    public void onMouseDragged(double x, double y, GraphicsContext gc) { }
 
     @Override
-    public void onMouseReleased(double x, double y, GraphicsContext gc) {
-        //Placeholder for future fill functionality
-    }
+    public void onMouseReleased(double x, double y, GraphicsContext gc) { }
 
     @Override
-    public String getName() {
-        return "Fill";
-    }
+    public String getName() { return "Fill"; }
 
     @Override
     public Image getIcon() {
         return ImageLoader.load("resources/images/bucket.png");
     }
 
-    @Override
-    public Node getSettingsPanel() {
-        Label toleranceLabel = new Label("Tolerance: " + this.tolerance);
-        toleranceLabel.setStyle("-fx-text-fill: #AAAAAA;");
+    private void floodFill(int[] pixels, int width, int height,
+                           int startX, int startY, int targetArgb, int fillArgb) {
+        boolean[] visited = new boolean[width * height];
+        Deque<Integer> stack = new ArrayDeque<>();
+        stack.push(startY * width + startX);
 
-        Slider toleranceSlider = new Slider(0, 50, this.tolerance);
-        toleranceSlider.setStyle(
-                "-fx-control-inner-background: #3C3F41;" +
-                "-fx-accent: #5294E2;"
-        );
-        toleranceSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            this.tolerance = newVal.intValue();
-            toleranceLabel.setText("Tolerance: " + this.tolerance);
-        });
+        while (!stack.isEmpty()) {
+            int idx = stack.pop();
+            if (visited[idx]) continue;
+            visited[idx] = true;
 
-        VBox panel = new VBox(8, toleranceLabel, toleranceSlider);
-        panel.setPadding(new Insets(4));
-        return panel;
+            if (!argbMatch(pixels[idx], targetArgb)) continue;
+            pixels[idx] = fillArgb;
+
+            int px = idx % width;
+            int py = idx / width;
+            if (px + 1 < width)  stack.push(idx + 1);
+            if (px - 1 >= 0)     stack.push(idx - 1);
+            if (py + 1 < height) stack.push(idx + width);
+            if (py - 1 >= 0)     stack.push(idx - width);
+        }
     }
 
-    private boolean colorsMatch(Color a, Color b) {
-        return Math.abs(to255(a.getRed()) - to255(b.getRed())) <= this.tolerance
-                && Math.abs(to255(a.getGreen()) - to255(b.getGreen())) <= this.tolerance
-                && Math.abs(to255(a.getBlue()) - to255(b.getBlue())) <= this.tolerance
-                && Math.abs(to255(a.getOpacity()) - to255(b.getOpacity())) <= this.tolerance;
-    }
-
-    private int to255(double channel) {
-        return (int) Math.round(channel * 255);
+    private boolean argbMatch(int a, int b) {
+        return Math.abs(((a >> 24) & 0xFF) - ((b >> 24) & 0xFF)) <= tolerance
+            && Math.abs(((a >> 16) & 0xFF) - ((b >> 16) & 0xFF)) <= tolerance
+            && Math.abs(((a >>  8) & 0xFF) - ((b >>  8) & 0xFF)) <= tolerance
+            && Math.abs(( a        & 0xFF) - ( b        & 0xFF)) <= tolerance;
     }
 }

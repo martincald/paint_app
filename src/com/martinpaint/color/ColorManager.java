@@ -4,6 +4,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 
+//color manager class.
+
 public class ColorManager {
 
     private final ObjectProperty<Color> currentColor = new SimpleObjectProperty<>(Color.BLACK);
@@ -16,7 +18,7 @@ public class ColorManager {
     public void setCurrentColor(Color color) {
         currentColor.set(color);
         if (color != null) {
-            colorHistory.push(color);
+            colorHistory.add(color);
         }
     }
 

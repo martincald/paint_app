@@ -8,7 +8,7 @@ import com.martinpaint.ui.MainWindow;
 import javafx.stage.Stage;
 
 public class AppController {
-
+    // app controller class.
     private final Stage stage;
 
     private ColorManager colorManager;

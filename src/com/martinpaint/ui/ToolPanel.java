@@ -3,7 +3,7 @@ package com.martinpaint.ui;
 import com.martinpaint.tools.Tool;
 import com.martinpaint.tools.ToolManager;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
+import javafx.geometry.Pos;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
@@ -15,131 +15,92 @@ import javafx.scene.layout.VBox;
 import java.util.ArrayList;
 import java.util.List;
 
+// 3x2 grid of tool selection buttons
 public class ToolPanel extends VBox {
 
-    private static final double ICON_SIZE = 28;
-    private static final double CELL_SIZE = 71;
-    private static final int GRID_COLUMNS = 3;
-    private static final int GRID_ROWS = 2;
-    private static final int TOTAL_SLOTS = GRID_COLUMNS * GRID_ROWS; // 6
+    private static final double ICON_SIZE = 36;
+    private static final double CELL_SIZE = 72;
+    private static final int    COLUMNS = 3;
+    private static final int    ROWS    = 2;
+    private static final int    TOTAL   = COLUMNS * ROWS;
 
     public ToolPanel(ToolManager toolManager) {
-        Label title = new Label("Tools");
-        title.setStyle("-fx-text-fill: #CCCCCC; -fx-font-weight: bold; -fx-font-size: 13px;");
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setAlignment(Pos.CENTER);
 
-        GridPane toolGrid = new GridPane();
-        toolGrid.setHgap(8);
-        toolGrid.setVgap(8);
-        toolGrid.setPadding(new Insets(6, 0, 0, 0));
-
-        ToggleGroup toggleGroup = new ToggleGroup();
+        ToggleGroup group = new ToggleGroup();
         List<Tool> tools = toolManager.getTools();
 
-        // track which button corresponds to which tool so we can sync with activeToolProperty.
-        List<ToggleButton> toolButtons = new ArrayList<>();
-        List<Tool> buttonTools = new ArrayList<>();
+        List<ToggleButton> realButtons = new ArrayList<>();
+        List<Tool>         buttonTools = new ArrayList<>();
 
-        for (int i = 0; i < TOTAL_SLOTS; i++) {
-            int col = i % GRID_COLUMNS;
-            int row = i / GRID_COLUMNS;
+        for (int i = 0; i < TOTAL; i++) {
+            int col = i % COLUMNS;
+            int row = i / COLUMNS;
 
-            ToggleButton button;
+            ToggleButton btn;
             if (i < tools.size()) {
                 Tool tool = tools.get(i);
-                button = createToolButton(tool, toolManager, toggleGroup);
-                toolButtons.add(button);
+                btn = createToolButton(tool, toolManager, group);
+                realButtons.add(btn);
                 buttonTools.add(tool);
-
-                //select current active tool
                 if (tool == toolManager.getActiveTool()) {
-                    button.setSelected(true);
+                    btn.setSelected(true);
                 }
             } else {
-                button = createPlaceholderButton();
+                btn = createPlaceholder();
             }
-
-            toolGrid.add(button, col, row);
+            grid.add(btn, col, row);
         }
 
-        // keep the active tool button selected
-        toolManager.activeToolProperty().addListener((obs, oldTool, newTool) -> {
-            for (int i = 0; i < toolButtons.size(); i++) {
-                toolButtons.get(i).setSelected(buttonTools.get(i) == newTool);
+        toolManager.activeToolProperty().addListener((_, _, newT) -> {
+            for (int i = 0; i < realButtons.size(); i++) {
+                realButtons.get(i).setSelected(buttonTools.get(i) == newT);
             }
         });
 
-        setSpacing(6);
-        setPadding(new Insets(4));
-        getChildren().addAll(title, toolGrid);
+        setSpacing(0);
+        setPadding(new Insets(4, 0, 4, 0));
+        setAlignment(Pos.CENTER);
+        getChildren().add(grid);
     }
 
-    private ToggleButton createToolButton(Tool tool, ToolManager toolManager, ToggleGroup group) {
-        ToggleButton button = new ToggleButton();
-        button.setToggleGroup(group);
-        applySquareSize(button);
+    private ToggleButton createToolButton(Tool tool, ToolManager mgr, ToggleGroup group) {
+        ToggleButton btn = new ToggleButton();
+        btn.setToggleGroup(group);
+        btn.getStyleClass().add("tool-slot");
+        applySquareSize(btn);
 
-        //Set icon for the tool
         Image icon = tool.getIcon();
         if (icon != null) {
-            ImageView iconView = new ImageView(icon);
-            iconView.setFitWidth(ICON_SIZE);
-            iconView.setFitHeight(ICON_SIZE);
-            iconView.setPreserveRatio(true);
-            button.setGraphic(iconView);
+            ImageView v = new ImageView(icon);
+            v.setFitWidth(ICON_SIZE);
+            v.setFitHeight(ICON_SIZE);
+            v.setPreserveRatio(true);
+            btn.setGraphic(v);
         } else {
-            button.setText(tool.getName());
+            btn.setText(tool.getName());
         }
 
-        //Show tool name on hover
-        button.setTooltip(new Tooltip(tool.getName()));
-
-        // Styling
-        button.setStyle(
-                "-fx-background-color: #3C3F41; " +
-                        "-fx-border-color: transparent; " +
-                        "-fx-padding: 6;"
-        );
-
-        //Highlight when selected
-        button.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
-            if (isSelected) {
-                button.setStyle(
-                        "-fx-background-color: #5294E2; " +
-                                "-fx-border-color: #5294E2; " +
-                                "-fx-padding: 6;"
-                );
-            } else {
-                button.setStyle(
-                        "-fx-background-color: #3C3F41; " +
-                                "-fx-border-color: transparent; " +
-                                "-fx-padding: 6;"
-                );
-            }
-        });
-
-        //activate tool when clicked
-        button.setOnAction(event -> toolManager.setActiveTool(tool.getName()));
-
-        return button;
+        btn.setTooltip(new Tooltip(tool.getName()));
+        btn.setOnAction(_ -> mgr.setActiveTool(tool.getName()));
+        return btn;
     }
 
-    private ToggleButton createPlaceholderButton() {
-        ToggleButton button = new ToggleButton();
-        applySquareSize(button);
-        button.setDisable(true);
-        button.setTooltip(new Tooltip("Coming soon"));
-        button.setStyle(
-                "-fx-background-color: #3C3F41; " +
-                        "-fx-border-color: transparent; " +
-                        "-fx-padding: 6; " +
-                        "-fx-opacity: 0.3;"
-        );
-        return button;
+    private ToggleButton createPlaceholder() {
+        ToggleButton btn = new ToggleButton();
+        btn.getStyleClass().add("tool-slot-empty");
+        applySquareSize(btn);
+        btn.setDisable(true);
+        btn.setTooltip(new Tooltip("Coming soon"));
+        return btn;
     }
 
-    private void applySquareSize(ToggleButton button) {
-        button.setPrefSize(CELL_SIZE, CELL_SIZE);
-        button.setMinSize(CELL_SIZE, CELL_SIZE);
-        button.setMaxSize(CELL_SIZE, CELL_SIZE);
+    private void applySquareSize(ToggleButton btn) {
+        btn.setPrefSize(CELL_SIZE, CELL_SIZE);
+        btn.setMinSize(CELL_SIZE, CELL_SIZE);
+        btn.setMaxSize(CELL_SIZE, CELL_SIZE);
     }
 }
