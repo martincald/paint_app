@@ -1,65 +1,70 @@
 package com.martinpaint.canvas;
 
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-// Drawing canvas and a small undo/redo stack of bitmap snapshots
+// Background and drawing layers.
 public class CanvasManager {
 
     public static final double CANVAS_SIZE = 1024;
     private static final int   MAX_HISTORY = 50;
 
+    // White paper layer.
+    private final Canvas backgroundCanvas;
+    // Drawing layer.
     private final Canvas canvas;
     private final GraphicsContext gc;
 
-    private final Deque<BufferedImage> undoStack = new ArrayDeque<>();
-    private final Deque<BufferedImage> redoStack = new ArrayDeque<>();
+    private final Deque<WritableImage> undoStack = new ArrayDeque<>();
+    private final Deque<WritableImage> redoStack = new ArrayDeque<>();
 
     public CanvasManager() {
+        backgroundCanvas = new Canvas(CANVAS_SIZE, CANVAS_SIZE);
+        GraphicsContext bgGc = backgroundCanvas.getGraphicsContext2D();
+        bgGc.setFill(Color.WHITE);
+        bgGc.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        // Background ignores mouse events.
+        backgroundCanvas.setMouseTransparent(true);
         canvas = new Canvas(CANVAS_SIZE, CANVAS_SIZE);
         gc = canvas.getGraphicsContext2D();
-        clear();
+        // Drawing canvas is transparent.
     }
 
+    // Drawing canvas.
     public Canvas getCanvas() {
         return canvas;
+    }
+
+    // Background canvas.
+    public Canvas getBackgroundCanvas() {
+        return backgroundCanvas;
     }
 
     public GraphicsContext getGraphicsContext() {
         return gc;
     }
 
+    // Clears only drawings.
     public void clear() {
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     public void saveStateForUndo() {
-        WritableImage snapshot = snapshotUnscaled();
-        BufferedImage buf = SwingFXUtils.fromFXImage(snapshot, null);
+        WritableImage snapshot = snapshotDrawingLayer();
         if (undoStack.size() >= MAX_HISTORY) {
             undoStack.removeLast();
         }
-        undoStack.push(buf);
+        undoStack.push(snapshot);
         redoStack.clear();
-    }
-
-    public boolean canUndo() {
-        return !undoStack.isEmpty();
-    }
-
-    public boolean canRedo() {
-        return !redoStack.isEmpty();
     }
 
     public void undo() {
@@ -70,22 +75,82 @@ public class CanvasManager {
         swap(redoStack, undoStack);
     }
 
-    private void swap(Deque<BufferedImage> from, Deque<BufferedImage> to) {
+    private void swap(Deque<WritableImage> from, Deque<WritableImage> to) {
         if (from.isEmpty()) return;
-        WritableImage current = snapshotUnscaled();
-        to.push(SwingFXUtils.fromFXImage(current, null));
-        WritableImage restore = SwingFXUtils.toFXImage(from.pop(), null);
+        to.push(snapshotDrawingLayer());
+        WritableImage restore = from.pop();
+        // Replace drawing layer.
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(restore, 0, 0);
     }
 
-    // Snapshot at the canvas unscaled pixel size, ignoring any viewport scale.
-    public WritableImage snapshotUnscaled() {
+    // Snapshot of the drawing layer.
+    public WritableImage snapshotDrawingLayer() {
         return snapshotUnscaled(canvas);
     }
 
+    // Final image. Used for export.
+    public WritableImage snapshotUnscaled() {
+        int w = (int) canvas.getWidth();
+        int h = (int) canvas.getHeight();
+        WritableImage out = new WritableImage(w, h);
+
+        // Draw background first.
+        SnapshotParameters bgParams = new SnapshotParameters();
+        bgParams.setTransform(identityIgnoringScale(backgroundCanvas));
+        backgroundCanvas.snapshot(bgParams, out);
+
+        // Composite drawing layer on top.
+        WritableImage drawing = snapshotDrawingLayer();
+        var reader = drawing.getPixelReader();
+        var outReader = out.getPixelReader();
+        var writer = out.getPixelWriter();
+        if (reader == null || outReader == null) return out;
+
+        int[] srcPixels = new int[w * h];
+        int[] dstPixels = new int[w * h];
+        reader.getPixels(0, 0, w, h, PixelFormat.getIntArgbInstance(), srcPixels, 0, w);
+        outReader.getPixels(0, 0, w, h, PixelFormat.getIntArgbInstance(), dstPixels, 0, w);
+
+        for (int i = 0; i < srcPixels.length; i++) {
+            int argb = srcPixels[i];
+            int a = (argb >>> 24) & 0xFF;
+            if (a == 0) continue;
+            if (a == 255) {
+                dstPixels[i] = argb;
+            } else {
+                dstPixels[i] = blend(argb, dstPixels[i], a);
+            }
+        }
+        writer.setPixels(0, 0, w, h, PixelFormat.getIntArgbInstance(), dstPixels, 0, w);
+        return out;
+    }
+
+    // Alpha compositing.
+    private static int blend(int src, int dst, int srcA) {
+        int sa = srcA;
+        int da = (dst >>> 24) & 0xFF;
+        int outA = sa + da * (255 - sa) / 255;
+        if (outA == 0) return 0;
+        int sr = (src >> 16) & 0xFF, sg = (src >> 8) & 0xFF, sb = src & 0xFF;
+        int dr = (dst >> 16) & 0xFF, dg = (dst >> 8) & 0xFF, db = dst & 0xFF;
+        int or = (sr * sa + dr * da * (255 - sa) / 255) / outA;
+        int og = (sg * sa + dg * da * (255 - sa) / 255) / outA;
+        int ob = (sb * sa + db * da * (255 - sa) / 255) / outA;
+        return (outA << 24) | (or << 16) | (og << 8) | ob;
+    }
+
+    // Snapshot at unscaled size.
     public static WritableImage snapshotUnscaled(Canvas c) {
         WritableImage img = new WritableImage((int) c.getWidth(), (int) c.getHeight());
         SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+        params.setTransform(identityIgnoringScale(c));
+        c.snapshot(params, img);
+        return img;
+    }
+
+    private static Transform identityIgnoringScale(Canvas c) {
         Transform combined = Transform.scale(1, 1);
         for (Transform t : c.getTransforms()) {
             if (t instanceof Scale s) {
@@ -94,8 +159,6 @@ public class CanvasManager {
                 combined = combined.createConcatenation(Transform.scale(sx, sy));
             }
         }
-        params.setTransform(combined);
-        c.snapshot(params, img);
-        return img;
+        return combined;
     }
 }

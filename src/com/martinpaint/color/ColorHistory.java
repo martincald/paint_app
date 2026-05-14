@@ -4,7 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 
-// Recently used colors. Existing entries keep their position when re-selected
+// Recently used colors.
 public class ColorHistory {
 
     private static final int MAX_CAPACITY = 5;

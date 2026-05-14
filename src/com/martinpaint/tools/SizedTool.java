@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 
-// Base class for stroke style tools that share size + last-point logic
+// Base class for tools with a size setting.
 public abstract class SizedTool extends Tool {
 
     private double size;
@@ -44,6 +44,8 @@ public abstract class SizedTool extends Tool {
     @Override
     public void onMouseReleased(double x, double y, GraphicsContext gc) { }
 
-    // The color used to draw the stroke for this tool.
-    protected abstract Color strokeColor();
+    // Color for the tool stroke. Defaults to black.
+    protected Color strokeColor() {
+        return Color.BLACK;
+    }
 }

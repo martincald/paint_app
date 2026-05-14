@@ -18,17 +18,8 @@ public class FileManager {
     // File manager class.
 
     public void exportPNG(Stage stage, CanvasManager canvasManager) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export PNG");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("PNG Files", "*.png")
-        );
-        fileChooser.setInitialFileName("painting.png");
-
-        File file = fileChooser.showSaveDialog(stage);
-        if (file == null) {
-            return;
-        }
+        File file = chooseFile(stage, "Export PNG", "painting.png", true);
+        if (file == null) return;
 
         try {
             WritableImage snapshot = canvasManager.snapshotUnscaled();
@@ -36,21 +27,12 @@ public class FileManager {
             ImageIO.write(bufferedImage, "png", file);
         } catch (Exception e) {
             System.err.println("Failed to export PNG: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     public void importPNG(Stage stage, CanvasManager canvasManager) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Import PNG");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("PNG Files", "*.png")
-        );
-
-        File file = fileChooser.showOpenDialog(stage);
-        if (file == null) {
-            return;
-        }
+        File file = chooseFile(stage, "Import PNG", null, false);
+        if (file == null) return;
 
         try {
             Image image = new Image(file.toURI().toString());
@@ -59,7 +41,16 @@ public class FileManager {
             gc.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight());
         } catch (Exception e) {
             System.err.println("Failed to import PNG: " + e.getMessage());
-            e.printStackTrace();
         }
+    }
+
+    private File chooseFile(Stage stage, String title, String defaultName, boolean save) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(title);
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Files", "*.png"));
+        if (defaultName != null) {
+            chooser.setInitialFileName(defaultName);
+        }
+        return save ? chooser.showSaveDialog(stage) : chooser.showOpenDialog(stage);
     }
 }

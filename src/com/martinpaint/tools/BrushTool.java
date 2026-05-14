@@ -4,8 +4,7 @@ import com.martinpaint.io.ImageLoader;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-//Brush tool
-
+// Standard paint brush.
 public class BrushTool extends SizedTool {
 
     public BrushTool() { super(5.0); }

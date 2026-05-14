@@ -181,3 +181,28 @@
     -fx-background-color: #555;
     -fx-background-radius: 4;
 }
+
+/*  12. Selection Overlay  */
+.selection-marquee {
+    -fx-fill: transparent;
+    -fx-stroke: black;
+    -fx-stroke-width: 1.0;
+    -fx-stroke-dash-array: 6 4;
+}
+
+.selection-handle {
+    -fx-fill: white;
+    -fx-stroke: black;
+    -fx-stroke-width: 1.0;
+}
+
+/*  13. Tool Settings  */
+.tool-slider-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+}
+
+.tool-slider {
+    -fx-control-inner-background: #3C3F41;
+    -fx-accent: #5294E2;
+}

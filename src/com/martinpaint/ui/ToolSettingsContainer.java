@@ -12,9 +12,7 @@ import javafx.scene.layout.VBox;
 // Shows the active tools settings.
 public class ToolSettingsContainer extends VBox {
 
-    private static final String PLACEHOLDER_TEXT =
-            "Things like the size slider, opacity, etc.. will be here, "
-                    + "any settings related to the tool chosen will be here.";
+    private static final String PLACEHOLDER_TEXT = "This tool has no settings.";
 
     private final StackPane contentArea;
     private final Label     placeholder;

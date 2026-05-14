@@ -12,10 +12,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-// 3x2 grid of tool selection buttons
+// Grid of tool buttons.
 public class ToolPanel extends VBox {
 
     private static final double ICON_SIZE = 36;
@@ -32,9 +33,7 @@ public class ToolPanel extends VBox {
 
         ToggleGroup group = new ToggleGroup();
         List<Tool> tools = toolManager.getTools();
-
-        List<ToggleButton> realButtons = new ArrayList<>();
-        List<Tool>         buttonTools = new ArrayList<>();
+        Map<Tool, ToggleButton> toolButtons = new HashMap<>();
 
         for (int i = 0; i < TOTAL; i++) {
             int col = i % COLUMNS;
@@ -44,8 +43,7 @@ public class ToolPanel extends VBox {
             if (i < tools.size()) {
                 Tool tool = tools.get(i);
                 btn = createToolButton(tool, toolManager, group);
-                realButtons.add(btn);
-                buttonTools.add(tool);
+                toolButtons.put(tool, btn);
                 if (tool == toolManager.getActiveTool()) {
                     btn.setSelected(true);
                 }
@@ -56,8 +54,9 @@ public class ToolPanel extends VBox {
         }
 
         toolManager.activeToolProperty().addListener((_, _, newT) -> {
-            for (int i = 0; i < realButtons.size(); i++) {
-                realButtons.get(i).setSelected(buttonTools.get(i) == newT);
+            ToggleButton selected = toolButtons.get(newT);
+            if (selected != null) {
+                selected.setSelected(true);
             }
         });
 

@@ -5,8 +5,10 @@ import javafx.scene.image.WritableImage;
 
 import java.io.InputStream;
 
-// Loads images from the classpath
+// Loads images from classpath.
 public final class ImageLoader {
+
+    private static final Image FALLBACK = new WritableImage(16, 16);
 
     private ImageLoader() {}
 
@@ -16,12 +18,12 @@ public final class ImageLoader {
         try (InputStream is = ImageLoader.class.getResourceAsStream(resourcePath)) {
             if (is == null) {
                 System.err.println("[Error] Resource not found: " + resourcePath);
-                return new WritableImage(16, 16);
+                return FALLBACK;
             }
             return new Image(is);
         } catch (Exception e) {
-            System.err.println("[Error] Failed to load image: " + resourcePath + " — " + e.getMessage());
-            return new WritableImage(16, 16);
+            System.err.println("[Error] Failed to load image: " + resourcePath + ": " + e.getMessage());
+            return FALLBACK;
         }
     }
 }

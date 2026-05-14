@@ -13,10 +13,6 @@ import javafx.scene.layout.VBox;
 // Builds the JavaFX settings panel for a given Tool.
 final class ToolSettingsView {
 
-    private static final String LABEL_STYLE = "-fx-text-fill: #AAAAAA;";
-    private static final String SLIDER_STYLE =
-            "-fx-control-inner-background: #3C3F41; -fx-accent: #5294E2;";
-
     private ToolSettingsView() {}
 
     static Node create(Tool tool) {
@@ -27,10 +23,10 @@ final class ToolSettingsView {
 
     private static VBox sizeSlider(SizedTool tool) {
         Label label = new Label("Size: " + (int) tool.getSize() + "px");
-        label.setStyle(LABEL_STYLE);
+        label.getStyleClass().add("tool-slider-label");
 
         Slider slider = new Slider(1, 50, tool.getSize());
-        slider.setStyle(SLIDER_STYLE);
+        slider.getStyleClass().add("tool-slider");
         slider.valueProperty().addListener((_, oldVal, newVal) -> {
             tool.setSize(newVal.doubleValue());
             label.setText("Size: " + (int) tool.getSize() + "px");
@@ -43,10 +39,10 @@ final class ToolSettingsView {
 
     private static VBox toleranceSlider(FillTool tool) {
         Label label = new Label("Tolerance: " + tool.getTolerance());
-        label.setStyle(LABEL_STYLE);
+        label.getStyleClass().add("tool-slider-label");
 
         Slider slider = new Slider(0, 100, tool.getTolerance());
-        slider.setStyle(SLIDER_STYLE);
+        slider.getStyleClass().add("tool-slider");
         slider.valueProperty().addListener((_, _, newVal) -> {
             int value = newVal.intValue();
             if (value != tool.getTolerance()) HapticFeedback.sliderTick();

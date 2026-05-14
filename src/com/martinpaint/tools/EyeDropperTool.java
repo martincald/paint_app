@@ -8,11 +8,15 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-// Picks the color of a drawn pixel. Pure white (the canvas background) is ignored
+// Picks the color of a drawn pixel.
 public class EyeDropperTool extends Tool {
+
+    private PixelReader reader;
 
     @Override
     public void onMousePressed(double x, double y, GraphicsContext gc) {
+        WritableImage snapshot = CanvasManager.snapshotUnscaled(gc.getCanvas());
+        reader = snapshot.getPixelReader();
         pickColor(x, y, gc);
     }
 
@@ -22,10 +26,12 @@ public class EyeDropperTool extends Tool {
     }
 
     @Override
-    public void onMouseReleased(double x, double y, GraphicsContext gc) { }
+    public void onMouseReleased(double x, double y, GraphicsContext gc) {
+        reader = null;
+    }
 
     private void pickColor(double x, double y, GraphicsContext gc) {
-        if (colorManager == null) return;
+        if (colorManager == null || reader == null) return;
 
         int px = (int) x;
         int py = (int) y;
@@ -33,19 +39,11 @@ public class EyeDropperTool extends Tool {
         int h  = (int) gc.getCanvas().getHeight();
         if (px < 0 || px >= w || py < 0 || py >= h) return;
 
-        WritableImage snapshot = CanvasManager.snapshotUnscaled(gc.getCanvas());
-        PixelReader reader = snapshot.getPixelReader();
-        if (reader == null) return;
-
         Color picked = reader.getColor(px, py);
-        // Skip the canvas background so the eyedropper only samples drawn ink.
-        if (isCanvasBackground(picked)) return;
+        // Skip transparent pixels.
+        if (picked.getOpacity() <= 0.001) return;
 
         colorManager.setCurrentColor(picked);
-    }
-
-    private static boolean isCanvasBackground(Color c) {
-        return c.getRed() >= 0.999 && c.getGreen() >= 0.999 && c.getBlue() >= 0.999 && c.getOpacity() >= 0.999;
     }
 
     @Override

@@ -13,8 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-// Side panel with tools, color history, etc.
-
+// Side panel for tools and settings.
 public class SidePanel extends StackPane {
 
     private static final double   PANEL_WIDTH    = 300;
@@ -55,7 +54,7 @@ public class SidePanel extends StackPane {
         toggleButton = new Button("‹");
         toggleButton.getStyleClass().add("panel-toggle");
         toggleButton.setFocusTraversable(false);
-        toggleButton.setOnAction(e -> toggle());
+        toggleButton.setOnAction(_ -> toggle());
 
         container = new HBox(scrollPane, toggleButton);
         container.setAlignment(Pos.TOP_LEFT);
@@ -65,7 +64,7 @@ public class SidePanel extends StackPane {
         StackPane.setAlignment(container, Pos.TOP_LEFT);
         getChildren().add(container);
 
-        // Only occupy the width of visible content so the overlay doesn't block the canvas.
+        // Occupy only the width of visible content.
         setMaxWidth(Region.USE_PREF_SIZE);
         setMaxHeight(Double.MAX_VALUE);
         setMinWidth(0);

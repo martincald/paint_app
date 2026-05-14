@@ -1,9 +1,9 @@
-# Makefile — builds libHapticFeedback.dylib for the Paint App
+# Makefile builds libHapticFeedback.dylib for the Paint App
 #
 # Usage (from the native/ directory):
-#   make          — builds the dylib
-#   make install  — builds + copies the dylib next to Paint App.jar
-#   make clean    — removes build artefacts
+#   make          builds the dylib
+#   make install  builds + copies the dylib next to Paint App.jar
+#   make clean    removes build artefacts
 #
 # Requires:
 #   - macOS with Xcode Command-Line Tools  (xcode-select --install)

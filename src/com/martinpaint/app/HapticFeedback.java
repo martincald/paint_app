@@ -6,8 +6,12 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-//JNI wrapper around macOS haptic feedback.
+// macOS haptic feedback wrapper.
 public final class HapticFeedback {
 
     // Haptic patterns matching NSHapticFeedbackPattern values.
@@ -32,12 +36,12 @@ public final class HapticFeedback {
         return enabled;
     }
 
-    // Haptics when switching tools
+    // Haptics for tool switching.
     public static void toolSwitch() {
         perform(GENERIC);
     }
 
-    // haptics when sliding the slider
+    // Haptics for slider movement.
     public static void sliderTick() {
         perform(ALIGNMENT);
     }
@@ -49,7 +53,7 @@ public final class HapticFeedback {
         try {
             performHaptic(pattern);
         } catch (Throwable t) {
-            // not crash app because of haptic feedback
+            // Ignore errors.
         }
     }
 
@@ -59,14 +63,14 @@ public final class HapticFeedback {
 
         if (!isMacOS()) return;
 
-        // check java.library.path first.
+        // Check library path.
         try {
             System.loadLibrary(LIB_NAME);
             available = true;
             return;
         } catch (UnsatisfiedLinkError ignored) { }
 
-        // check for common project locations
+        // Check common locations.
         for (Path candidate : candidatePaths()) {
             try {
                 if (candidate != null && Files.isRegularFile(candidate)) {
@@ -77,7 +81,7 @@ public final class HapticFeedback {
             } catch (Throwable ignored) { }
         }
 
-        // else extract from jar from bundle
+        // Extract from JAR.
         try {
             InputStream in = HapticFeedback.class.getResourceAsStream(LIB_RESOURCE);
             if (in == null) return;
@@ -95,9 +99,9 @@ public final class HapticFeedback {
         } catch (Throwable ignored) { }
     }
 
-    // Working dir, native/, the running jar/classes dir, and a few parents up.
+    // Search common directories.
     private static Path[] candidatePaths() {
-        java.util.List<Path> list = new java.util.ArrayList<>();
+        List<Path> list = new ArrayList<>();
 
         Path cwd = Paths.get("").toAbsolutePath();
         list.add(cwd.resolve(LIB_FILE));
@@ -106,22 +110,14 @@ public final class HapticFeedback {
         try {
             File codeSource = new File(HapticFeedback.class
                     .getProtectionDomain().getCodeSource().getLocation().toURI());
-            File baseDir = codeSource.isDirectory() ? codeSource : codeSource.getParentFile();
-            if (baseDir != null) {
-                Path base = baseDir.toPath();
-                list.add(base.resolve(LIB_FILE));
-                list.add(base.resolve("native").resolve(LIB_FILE));
-                if (base.getParent() != null) {
-                    list.add(base.getParent().resolve(LIB_FILE));
-                    list.add(base.getParent().resolve("native").resolve(LIB_FILE));
-                    Path up = base.getParent();
-                    for (int i = 0; i < 3 && up.getParent() != null; i++) {
-                        up = up.getParent();
-                        list.add(up.resolve(LIB_FILE));
-                        list.add(up.resolve("native").resolve(LIB_FILE));
-                    }
-                }
-            }
+            Path base = (codeSource.isDirectory() ? codeSource : codeSource.getParentFile()).toPath();
+
+            Stream.iterate(base, Objects::nonNull, Path::getParent)
+                    .limit(4)
+                    .forEach(p -> {
+                        list.add(p.resolve(LIB_FILE));
+                        list.add(p.resolve("native").resolve(LIB_FILE));
+                    });
         } catch (Throwable ignored) { }
 
         return list.toArray(new Path[0]);

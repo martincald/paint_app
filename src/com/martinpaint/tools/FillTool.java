@@ -10,10 +10,9 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayDeque;
 import java.util.Deque;
 
-// Bucket fill via iterative flood-fill on an int[] ARGB buffer
+// Bucket fill tool.
 public class FillTool extends Tool {
 
     private int tolerance = 30;
@@ -68,28 +67,50 @@ public class FillTool extends Tool {
 
     private void floodFill(int[] pixels, int width, int height,
                            int startX, int startY, int targetArgb, int fillArgb) {
-        boolean[] visited = new boolean[width * height];
-        Deque<Integer> stack = new ArrayDeque<>();
-        stack.push(startY * width + startX);
+        if (argbMatch(fillArgb, targetArgb)) return;
 
-        while (!stack.isEmpty()) {
-            int idx = stack.pop();
-            if (visited[idx]) continue;
-            visited[idx] = true;
+        int[] stack = new int[width * height * 2];
+        int top = -1;
+        stack[++top] = startX;
+        stack[++top] = startY;
 
-            if (!argbMatch(pixels[idx], targetArgb)) continue;
-            pixels[idx] = fillArgb;
+        while (top >= 0) {
+            int y = stack[top--];
+            int x = stack[top--];
 
-            int px = idx % width;
-            int py = idx / width;
-            if (px + 1 < width)  stack.push(idx + 1);
-            if (px - 1 >= 0)     stack.push(idx - 1);
-            if (py + 1 < height) stack.push(idx + width);
-            if (py - 1 >= 0)     stack.push(idx - width);
+            int x1 = x;
+            while (x1 >= 0 && argbMatch(pixels[y * width + x1], targetArgb)) x1--;
+            x1++;
+
+            boolean spanAbove = false;
+            boolean spanBelow = false;
+
+            while (x1 < width && argbMatch(pixels[y * width + x1], targetArgb)) {
+                pixels[y * width + x1] = fillArgb;
+
+                if (!spanAbove && y > 0 && argbMatch(pixels[(y - 1) * width + x1], targetArgb)) {
+                    stack[++top] = x1;
+                    stack[++top] = y - 1;
+                    spanAbove = true;
+                } else if (spanAbove && y > 0 && !argbMatch(pixels[(y - 1) * width + x1], targetArgb)) {
+                    spanAbove = false;
+                }
+
+                if (!spanBelow && y < height - 1 && argbMatch(pixels[(y + 1) * width + x1], targetArgb)) {
+                    stack[++top] = x1;
+                    stack[++top] = y + 1;
+                    spanBelow = true;
+                } else if (spanBelow && y < height - 1 && !argbMatch(pixels[(y + 1) * width + x1], targetArgb)) {
+                    spanBelow = false;
+                }
+                x1++;
+            }
         }
     }
 
     private boolean argbMatch(int a, int b) {
+        if (a == b) return true;
+        if (tolerance == 0) return false;
         return Math.abs(((a >> 24) & 0xFF) - ((b >> 24) & 0xFF)) <= tolerance
             && Math.abs(((a >> 16) & 0xFF) - ((b >> 16) & 0xFF)) <= tolerance
             && Math.abs(((a >>  8) & 0xFF) - ((b >>  8) & 0xFF)) <= tolerance
