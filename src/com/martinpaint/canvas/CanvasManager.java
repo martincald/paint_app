@@ -23,6 +23,8 @@ public class CanvasManager {
     // Drawing layer.
     private final Canvas canvas;
     private final GraphicsContext gc;
+    // Temporary overlay used by tools to preview strokes without touching the drawing layer.
+    private final Canvas previewCanvas;
 
     private final Deque<WritableImage> undoStack = new ArrayDeque<>();
     private final Deque<WritableImage> redoStack = new ArrayDeque<>();
@@ -32,11 +34,18 @@ public class CanvasManager {
         GraphicsContext bgGc = backgroundCanvas.getGraphicsContext2D();
         bgGc.setFill(Color.WHITE);
         bgGc.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-        // Background ignores mouse events.
+        // Background ignores mouse events
         backgroundCanvas.setMouseTransparent(true);
         canvas = new Canvas(CANVAS_SIZE, CANVAS_SIZE);
         gc = canvas.getGraphicsContext2D();
-        // Drawing canvas is transparent.
+        // Preview canvas sits above the drawing layer; tools paint the live preview here.
+        previewCanvas = new Canvas(CANVAS_SIZE, CANVAS_SIZE);
+        previewCanvas.setMouseTransparent(true);
+    }
+
+    // Preview canvas, used for live stroke preview. Must be added as an overlay in the viewport.
+    public Canvas getPreviewCanvas() {
+        return previewCanvas;
     }
 
     // Drawing canvas.

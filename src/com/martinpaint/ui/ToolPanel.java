@@ -1,5 +1,6 @@
 package com.martinpaint.ui;
 
+import com.martinpaint.tools.SelectionTool;
 import com.martinpaint.tools.Tool;
 import com.martinpaint.tools.ToolManager;
 import javafx.geometry.Insets;
@@ -19,7 +20,8 @@ import java.util.Map;
 // Grid of tool buttons.
 public class ToolPanel extends VBox {
 
-    private static final double ICON_SIZE = 36;
+    private static final double ICON_SIZE            = 36;
+    private static final double SELECTION_ICON_SIZE  = 46; // Selection icon is larger for clarity.
     private static final double CELL_SIZE = 72;
     private static final int    COLUMNS = 3;
     private static final int    ROWS    = 2;
@@ -31,6 +33,7 @@ public class ToolPanel extends VBox {
         grid.setVgap(10);
         grid.setAlignment(Pos.CENTER);
 
+        // ToggleGroup with no default selected — allows full deselection.
         ToggleGroup group = new ToggleGroup();
         List<Tool> tools = toolManager.getTools();
         Map<Tool, ToggleButton> toolButtons = new HashMap<>();
@@ -53,10 +56,14 @@ public class ToolPanel extends VBox {
             grid.add(btn, col, row);
         }
 
-        toolManager.activeToolProperty().addListener((_, _, newT) -> {
-            ToggleButton selected = toolButtons.get(newT);
-            if (selected != null) {
-                selected.setSelected(true);
+        // Keep button state in sync when the active tool changes from outside.
+        toolManager.activeToolProperty().addListener((_, _, newTool) -> {
+            if (newTool == null) {
+                // No tool selected — deselect all buttons.
+                group.selectToggle(null);
+            } else {
+                ToggleButton btn = toolButtons.get(newTool);
+                if (btn != null) btn.setSelected(true);
             }
         });
 
@@ -74,9 +81,10 @@ public class ToolPanel extends VBox {
 
         Image icon = tool.getIcon();
         if (icon != null) {
+            double iconSize = (tool instanceof SelectionTool) ? SELECTION_ICON_SIZE : ICON_SIZE;
             ImageView v = new ImageView(icon);
-            v.setFitWidth(ICON_SIZE);
-            v.setFitHeight(ICON_SIZE);
+            v.setFitWidth(iconSize);
+            v.setFitHeight(iconSize);
             v.setPreserveRatio(true);
             btn.setGraphic(v);
         } else {
@@ -84,7 +92,16 @@ public class ToolPanel extends VBox {
         }
 
         btn.setTooltip(new Tooltip(tool.getName()));
-        btn.setOnAction(_ -> mgr.setActiveTool(tool.getName()));
+
+        btn.setOnAction(_ -> {
+            // If this tool is already active, clicking again deselects it.
+            if (mgr.getActiveTool() == tool) {
+                mgr.clearActiveTool();
+            } else {
+                mgr.setActiveTool(tool.getName());
+            }
+        });
+
         return btn;
     }
 

@@ -42,13 +42,15 @@ public class CanvasViewport extends ScrollPane {
     public CanvasViewport(CanvasManager canvasManager) {
         getStyleClass().add("canvas-viewport");
 
-        // Background and drawing canvases share the same Scale transform.
+        // Background, drawing, and preview canvases share the same Scale transform.
         // They zoom together to stay aligned.
-        canvasGroup = new Group(canvasManager.getBackgroundCanvas(), canvasManager.getCanvas());
+        canvasGroup = new Group(canvasManager.getBackgroundCanvas(), canvasManager.getCanvas(),
+                canvasManager.getPreviewCanvas());
         canvasGroup.setFocusTraversable(true);
         scale = new Scale(INITIAL_SCALE, INITIAL_SCALE, 0, 0);
         canvasManager.getBackgroundCanvas().getTransforms().add(scale);
         canvasManager.getCanvas().getTransforms().add(scale);
+        canvasManager.getPreviewCanvas().getTransforms().add(scale);
 
         workspace = new StackPane(canvasGroup);
         workspace.getStyleClass().add("canvas-workspace");

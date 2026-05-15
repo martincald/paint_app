@@ -33,6 +33,10 @@ public class ToolManager {
 
         for (Tool tool : tools) {
             toolsByName.put(tool.getName(), tool);
+            // Give every SizedTool a reference to the shared preview canvas.
+            if (tool instanceof SizedTool st) {
+                st.setPreviewCanvas(canvasManager.getPreviewCanvas());
+            }
         }
 
         activeTool.set(tools.getFirst());
@@ -63,6 +67,13 @@ public class ToolManager {
         }
     }
 
+    // Deselects the current tool so no tool is active.
+    public void clearActiveTool() {
+        if (activeTool.get() != null) {
+            activeTool.set(null);
+        }
+    }
+
     public Tool getActiveTool() {
         return activeTool.get();
     }
@@ -81,6 +92,7 @@ public class ToolManager {
 
         canvas.setOnMousePressed(event -> {
             Tool tool = activeTool.get();
+            if (tool == null) return; // No tool selected, do nothing.
             // SelectionTool and EyeDropperTool manage their own undo snapshots.
             if (!(tool instanceof EyeDropperTool) && !(tool instanceof SelectionTool)) {
                 canvasManager.saveStateForUndo();
@@ -89,11 +101,15 @@ public class ToolManager {
         });
 
         canvas.setOnMouseDragged(event -> {
-            activeTool.get().onMouseDragged(event.getX(), event.getY(), gc);
+            Tool tool = activeTool.get();
+            if (tool == null) return;
+            tool.onMouseDragged(event.getX(), event.getY(), gc);
         });
 
         canvas.setOnMouseReleased(event -> {
-            activeTool.get().onMouseReleased(event.getX(), event.getY(), gc);
+            Tool tool = activeTool.get();
+            if (tool == null) return;
+            tool.onMouseReleased(event.getX(), event.getY(), gc);
         });
     }
 }

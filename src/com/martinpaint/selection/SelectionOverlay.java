@@ -2,16 +2,14 @@ package com.martinpaint.selection;
 
 import com.martinpaint.canvas.CanvasManager;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.util.function.Consumer;
 
-// Transparent overlay rendered above the canvas. Coordinates are in canvas pixel space.
+// Transparent overlay rendered above the canvas
 public class SelectionOverlay extends Pane {
 
     private final Rectangle marquee   = new Rectangle();
@@ -62,7 +60,7 @@ public class SelectionOverlay extends Pane {
 
 // Public API
 
-    // Shows the dashed marquee during DEFINING phase (no float image).
+    // Shows the dashed marquee during defining phase
     public void showMarquee(double x, double y, double w, double h) {
         setVisible(true);
         floatView.setVisible(false);
@@ -70,8 +68,8 @@ public class SelectionOverlay extends Pane {
         setHandlesVisible(false);
     }
 
-    //Call once when entering FLOATING: sets the image and makes everything visible.
-    //Use updateFloatBounds on subsequent drag/nudge/resize ticks.
+    // Call once when entering floating: sets the image and makes everything visible.
+    // Use updateFloatBounds on subsequent drag/nudge/resize ticks.
     public void showFloat(Selection selection) {
         setVisible(true);
         floatView.setImage(selection.getFloatImage());
@@ -80,7 +78,7 @@ public class SelectionOverlay extends Pane {
         setHandlesVisible(true);
     }
 
-    // Updates position/size of the float image, marquee, and handles without reassigning the image.
+    // Updates position/size of the float image, marquee, and handles without reassigning the image
     public void updateFloatBounds(Rectangle2D b) {
         floatView.setX(b.getMinX());
         floatView.setY(b.getMinY());
@@ -90,7 +88,7 @@ public class SelectionOverlay extends Pane {
         positionHandles(b);
     }
 
-    // Hides the overlay.
+    // Hides the overlay
     public void hide() {
         setVisible(false);
     }
