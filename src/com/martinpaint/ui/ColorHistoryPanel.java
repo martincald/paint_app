@@ -1,117 +1,107 @@
 package com.martinpaint.ui;
 
-import com.martinpaint.color.ColorHistory;
 import com.martinpaint.color.ColorManager;
 import com.martinpaint.color.ColorUtils;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-// Recently used color slots.
+// Swatch panel: 32 preset color tiles + recently used colors.
 public class ColorHistoryPanel extends VBox {
 
-    private static final int    HISTORY_SIZE = 5;
-    private static final double SLOT_SIZE    = 70.0;
+    private static final double SWATCH_SIZE = 22;
+
+    private static final String[] PRESET_SWATCHES = {
+        "#000000", "#3F3F3F", "#7F7F7F", "#BFBFBF", "#FFFFFF", "#FF0F0F", "#FF6A00", "#FFD600",
+        "#7BD63B", "#1BB766", "#19B5A4", "#1492E6", "#2F4FE0", "#7445E8", "#B33ACF", "#E73C9A",
+        "#5E3A1F", "#8B5A2B", "#C28856", "#E6B780", "#F5DCB7", "#A52A2A", "#D02F2F", "#E25757",
+        "#1B3A3A", "#1E5957", "#2F8076", "#5BAA9F", "#A8D5CC", "#0B1F4D", "#15326E", "#2C5BB8",
+    };
 
     private final ColorManager colorManager;
-    private final Region[]     historyTiles = new Region[HISTORY_SIZE];
-    private final ColorPicker  hiddenPicker = new ColorPicker();
 
     public ColorHistoryPanel(ColorManager colorManager) {
         this.colorManager = colorManager;
+        getStyleClass().add("panel-box");
 
-        setSpacing(12);
-        setPadding(new Insets(4, 0, 4, 0));
-        setFillWidth(true);
-        setAlignment(Pos.TOP_CENTER);
+        HBox header = panelHeader("SWATCHES");
 
-        Label title = new Label("Color Selector");
-        title.getStyleClass().add("section-title");
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setAlignment(Pos.CENTER);
-
-        for (int i = 0; i < HISTORY_SIZE; i++) {
-            historyTiles[i] = createColorTile();
-            grid.add(historyTiles[i], i % 3, i / 3);
+        FlowPane swatchGrid = new FlowPane(3, 3);
+        swatchGrid.setPrefWrapLength(8 * (SWATCH_SIZE + 3));
+        swatchGrid.setPadding(new Insets(0, 0, 2, 0));
+        for (String hex : PRESET_SWATCHES) {
+            swatchGrid.getChildren().add(createSwatch(hex));
         }
-        grid.add(createAddTile(), 2, 1);
 
-        hiddenPicker.setVisible(false);
-        hiddenPicker.setManaged(false);
-        hiddenPicker.setOnAction(_ -> {
-            Color picked = hiddenPicker.getValue();
-            if (picked != null) colorManager.setCurrentColor(picked);
-        });
+        FlowPane recentRow = new FlowPane(3, 3);
+        recentRow.setPadding(new Insets(6, 0, 0, 0));
+        refreshRecent(recentRow);
+        colorManager.getColorHistory().getColors()
+            .addListener((javafx.collections.ListChangeListener<Color>) _ -> refreshRecent(recentRow));
 
-        getChildren().addAll(title, grid, hiddenPicker);
+        VBox body = new VBox(swatchGrid);
+        body.setPadding(new Insets(8, 10, 8, 10));
 
-        refreshFromHistory();
+        getChildren().addAll(header, body);
+
+        colorManager.getColorHistory().getColors().addListener(
+            (javafx.collections.ListChangeListener<Color>) _ -> {
+                if (!body.getChildren().contains(recentRow) && !recentRow.getChildren().isEmpty()) {
+                    body.getChildren().add(recentRow);
+                }
+            }
+        );
+    }
+
+    private Region createSwatch(String hex) {
+        Region sw = new Region();
+        sw.getStyleClass().add("color-slot");
+        sw.setPrefSize(SWATCH_SIZE, SWATCH_SIZE);
+        sw.setMinSize(SWATCH_SIZE, SWATCH_SIZE);
+        sw.setMaxSize(SWATCH_SIZE, SWATCH_SIZE);
+        sw.setStyle("-fx-background-color: " + hex + ";");
+        Tooltip.install(sw, new Tooltip(hex));
+        sw.setCursor(Cursor.HAND);
+        sw.setOnMouseClicked(_ -> colorManager.setCurrentColor(Color.web(hex)));
+        return sw;
+    }
+
+    private void refreshRecent(FlowPane row) {
+        row.getChildren().clear();
         ObservableList<Color> colors = colorManager.getColorHistory().getColors();
-        colors.addListener((ListChangeListener<Color>) _ -> refreshFromHistory());
-    }
-
-    private Region createColorTile() {
-        Region tile = new Region();
-        tile.getStyleClass().add("color-slot");
-        tile.setPrefSize(SLOT_SIZE, SLOT_SIZE);
-        tile.setMinSize(SLOT_SIZE, SLOT_SIZE);
-        tile.setMaxSize(SLOT_SIZE, SLOT_SIZE);
-        tile.setOnMouseClicked(_ -> {
-            Color stored = (Color) tile.getUserData();
-            if (stored != null) colorManager.setCurrentColor(stored);
-        });
-        applyFill(tile, null);
-        return tile;
-    }
-
-    private StackPane createAddTile() {
-        Region bg = new Region();
-        bg.getStyleClass().add("color-slot-add");
-        bg.setPrefSize(SLOT_SIZE, SLOT_SIZE);
-        bg.setMinSize(SLOT_SIZE, SLOT_SIZE);
-        bg.setMaxSize(SLOT_SIZE, SLOT_SIZE);
-        bg.setStyle("-fx-background-color: #FFFFFF;");
-
-        Label plus = new Label("+");
-        plus.getStyleClass().add("color-add-plus");
-
-        StackPane pane = new StackPane(bg, plus);
-        pane.setCursor(Cursor.HAND);
-        pane.setPrefSize(SLOT_SIZE, SLOT_SIZE);
-        pane.setOnMouseClicked(_ -> hiddenPicker.show());
-        return pane;
-    }
-
-    // null color = empty slot which cannot be clicked
-    private void applyFill(Region tile, Color color) {
-        tile.setUserData(color);
-        if (color == null) {
-            tile.setStyle("-fx-background-color: #2E2E2E;");
-            tile.setCursor(Cursor.DEFAULT);
-        } else {
-            tile.setStyle("-fx-background-color: " + ColorUtils.toWebHex(color) + ";");
-            tile.setCursor(Cursor.HAND);
+        for (Color c : colors) {
+            String hex = ColorUtils.toWebHex(c);
+            row.getChildren().add(createSwatch(hex));
         }
     }
 
-    private void refreshFromHistory() {
-        ColorHistory history = colorManager.getColorHistory();
-        ObservableList<Color> colors = history.getColors();
-        for (int i = 0; i < HISTORY_SIZE; i++) {
-            Color c = i < colors.size() ? colors.get(i) : null;
-            applyFill(historyTiles[i], c);
-        }
+    // ── Reusable header helpers ───────────────────────────────────
+    static HBox panelHeader(String title) {
+        javafx.scene.control.Label lbl = new javafx.scene.control.Label(title);
+        lbl.getStyleClass().add("panel-title");
+        HBox.setHgrow(lbl, Priority.ALWAYS);
+
+        HBox actions = new HBox(2);
+        actions.setAlignment(Pos.CENTER_RIGHT);
+
+        HBox header = new HBox(lbl, actions);
+        header.getStyleClass().add("panel-header");
+        header.setAlignment(Pos.CENTER_LEFT);
+        return header;
+    }
+
+    static Button headerBtn(String text) {
+        Button btn = new Button(text);
+        btn.getStyleClass().add("panel-action-btn");
+        return btn;
     }
 }

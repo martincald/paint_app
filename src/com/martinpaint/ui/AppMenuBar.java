@@ -7,6 +7,7 @@ import com.martinpaint.selection.SelectionController;
 import com.martinpaint.tools.SelectionTool;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -19,6 +20,10 @@ import javafx.stage.Stage;
 public class AppMenuBar extends MenuBar {
 
     public AppMenuBar(AppController controller, Stage stage) {
+        this(controller, stage, null);
+    }
+
+    public AppMenuBar(AppController controller, Stage stage, CanvasViewport viewport) {
         // Use the macOS system menu bar
         setUseSystemMenuBar(true);
         setPickOnBounds(false);
@@ -61,7 +66,39 @@ public class AppMenuBar extends MenuBar {
             pasteItem.setDisable(sc == null);
         });
 
-        getMenus().addAll(fileMenu, editMenu);
+        // View menu — wired to the canvas viewport when available
+        Menu viewMenu = new Menu("View");
+        if (viewport != null) {
+            MenuItem zoomIn  = item("Zoom In",  new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHORTCUT_DOWN), _ -> viewport.zoomIn());
+            MenuItem zoomOut = item("Zoom Out", new KeyCodeCombination(KeyCode.MINUS,  KeyCombination.SHORTCUT_DOWN), _ -> viewport.zoomOut());
+            MenuItem zoom100 = item("Actual Size", new KeyCodeCombination(KeyCode.DIGIT0, KeyCombination.SHORTCUT_DOWN), _ -> viewport.zoomTo(1.0));
+            viewMenu.getItems().addAll(zoomIn, zoomOut, new SeparatorMenuItem(), zoom100);
+        } else {
+            viewMenu.setDisable(true);
+        }
+
+        // Select menu
+        Menu selectMenu = new Menu("Select");
+        MenuItem deselectItem = item("Deselect", null,
+                _ -> selectionAction(controller, c -> { if (c.hasFloat()) c.cancel(); }));
+        selectMenu.setOnShowing(_ -> {
+            SelectionController sc = getSelectionController(controller);
+            deselectItem.setDisable(sc == null || !sc.hasFloat());
+        });
+        selectMenu.getItems().add(deselectItem);
+
+        // Help menu
+        Menu helpMenu = new Menu("Help");
+        MenuItem aboutItem = item("About Paint App", null, _ -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("About Paint App");
+            alert.setHeaderText("Paint App  v1.3");
+            alert.setContentText("A dark-theme paint application built with JavaFX.");
+            alert.showAndWait();
+        });
+        helpMenu.getItems().add(aboutItem);
+
+        getMenus().addAll(fileMenu, editMenu, viewMenu, selectMenu, helpMenu);
     }
 
     private static MenuItem item(String text, KeyCombination accel, EventHandler<ActionEvent> action) {

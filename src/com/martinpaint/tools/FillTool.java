@@ -10,8 +10,6 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-import java.util.Deque;
-
 // Bucket fill tool.
 public class FillTool extends Tool {
 
@@ -58,7 +56,7 @@ public class FillTool extends Tool {
     public void onMouseReleased(double x, double y, GraphicsContext gc) { }
 
     @Override
-    public String getName() { return "Fill"; }
+    public String getName() { return "Bucket Fill"; }
 
     @Override
     public Image getIcon() {

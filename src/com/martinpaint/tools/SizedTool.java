@@ -1,25 +1,27 @@
 package com.martinpaint.tools;
 
-import com.martinpaint.canvas.CanvasManager;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 
-// Base class for tools with a size setting
+import java.util.ArrayList;
+import java.util.List;
+
+// Base class for tools with a size setting (brush, eraser, etc.)
 public abstract class SizedTool extends Tool {
 
     private double size;
     private double lastX;
     private double lastY;
 
-    // Offscreen canvas used by tools that need uniform per-stroke opacity.
-    private Canvas strokeBuffer;
-    private GraphicsContext bufferGc;
-
-    // Transparent canvas that sits above the drawing layer for live previews.
+    // Shared preview canvas provided by ToolManager.
     private Canvas previewCanvas;
+
+    // Stroke points collected during a drag, used to replay the stroke on release.
+    // Each entry is [x, y].
+    private final List<double[]> strokePoints = new ArrayList<>();
 
     protected SizedTool(double initialSize) {
         this.size = initialSize;
@@ -33,10 +35,10 @@ public abstract class SizedTool extends Tool {
         this.previewCanvas = canvas;
     }
 
-    // Subclasses override to true when they need the opacity buffer
-    protected boolean usesStrokeBuffer() { return false; }
+    // Subclasses override to true when they need per-stroke opacity (e.g. BrushTool).
+    protected boolean usesOpacityPreview() { return false; }
 
-    // The opacity to apply when flattening the buffer. Defaults to fully opaque.
+    // The opacity to apply when committing the stroke. Defaults to fully opaque.
     protected double currentOpacity() { return 1.0; }
 
     @Override
@@ -44,42 +46,37 @@ public abstract class SizedTool extends Tool {
         lastX = x;
         lastY = y;
 
-        if (usesStrokeBuffer()) {
-            double w = gc.getCanvas().getWidth();
-            double h = gc.getCanvas().getHeight();
-
-            // Create a fresh offscreen canvas that will accumulate this stroke, fully opaque.
-            strokeBuffer = new Canvas(w, h);
-            bufferGc = strokeBuffer.getGraphicsContext2D();
-            configureStroke(bufferGc);
+        if (usesOpacityPreview()) {
+            strokePoints.clear();
+            strokePoints.add(new double[]{x, y});
 
             // Clear any leftover preview from the previous stroke.
+            clearPreview();
+
+            // Configure the preview canvas stroke style once at press time.
             if (previewCanvas != null) {
-                previewCanvas.getGraphicsContext2D()
-                        .clearRect(0, 0, previewCanvas.getWidth(), previewCanvas.getHeight());
+                configureStroke(previewCanvas.getGraphicsContext2D());
             }
         }
     }
 
     @Override
     public void onMouseDragged(double x, double y, GraphicsContext gc) {
-        if (usesStrokeBuffer()) {
-            // Add the new segment to the offscreen buffer (fully opaque accumulation).
-            bufferGc.beginPath();
-            bufferGc.moveTo(lastX, lastY);
-            bufferGc.lineTo(x, y);
-            bufferGc.stroke();
+        if (usesOpacityPreview()) {
+            // Record the point so we can replay the full stroke on release.
+            strokePoints.add(new double[]{x, y});
 
-            // Paint the live preview onto the preview canvas so the user sees the stroke.
+            // Draw only the new segment onto the preview canvas — no snapshot needed.
             if (previewCanvas != null) {
                 GraphicsContext previewGc = previewCanvas.getGraphicsContext2D();
-                previewGc.clearRect(0, 0, previewCanvas.getWidth(), previewCanvas.getHeight());
-                previewGc.save();
-                previewGc.setGlobalAlpha(currentOpacity());
-                previewGc.drawImage(CanvasManager.snapshotUnscaled(strokeBuffer), 0, 0);
-                previewGc.restore();
+                previewGc.beginPath();
+                previewGc.moveTo(lastX, lastY);
+                previewGc.lineTo(x, y);
+                previewGc.stroke();
             }
         } else {
+            // Tools without opacity preview (eraser subclass overrides entirely, but
+            // any future plain tool falls here) draw directly to the drawing canvas.
             configureStroke(gc);
             gc.beginPath();
             gc.moveTo(lastX, lastY);
@@ -93,25 +90,45 @@ public abstract class SizedTool extends Tool {
 
     @Override
     public void onMouseReleased(double x, double y, GraphicsContext gc) {
-        if (usesStrokeBuffer() && strokeBuffer != null) {
-            // Clear the preview  the real stroke is about to be committed to the drawing layer.
-            if (previewCanvas != null) {
-                previewCanvas.getGraphicsContext2D()
-                        .clearRect(0, 0, previewCanvas.getWidth(), previewCanvas.getHeight());
-            }
+        if (usesOpacityPreview() && !strokePoints.isEmpty()) {
+            // Clear the preview — we are about to commit the real stroke.
+            clearPreview();
 
-            // Flatten the full stroke onto the drawing layer exactly once at the chosen opacity.
+            // Replay the entire polyline as a single path so segment joins don't
+            // accumulate alpha at low opacity. This is one draw call, no snapshot.
             gc.save();
             gc.setGlobalAlpha(currentOpacity());
-            gc.drawImage(CanvasManager.snapshotUnscaled(strokeBuffer), 0, 0);
+            configureStroke(gc);
+            gc.beginPath();
+            double[] first = strokePoints.get(0);
+            gc.moveTo(first[0], first[1]);
+            for (int i = 1; i < strokePoints.size(); i++) {
+                double[] pt = strokePoints.get(i);
+                gc.lineTo(pt[0], pt[1]);
+            }
+            gc.stroke();
             gc.restore();
 
-            strokeBuffer = null;
-            bufferGc     = null;
+            strokePoints.clear();
         }
     }
 
-    // Applies the stroke style
+    @Override
+    public void onDeactivated() {
+        // If the tool is switched mid-stroke, clean up the preview.
+        clearPreview();
+        strokePoints.clear();
+    }
+
+    // Clears the preview canvas.
+    private void clearPreview() {
+        if (previewCanvas != null) {
+            previewCanvas.getGraphicsContext2D()
+                    .clearRect(0, 0, previewCanvas.getWidth(), previewCanvas.getHeight());
+        }
+    }
+
+    // Applies the stroke style to the given GraphicsContext.
     private void configureStroke(GraphicsContext target) {
         target.setStroke(strokeColor());
         target.setLineWidth(size);

@@ -2,19 +2,24 @@ package com.martinpaint.ui;
 
 import com.martinpaint.canvas.CanvasManager;
 import javafx.animation.AnimationTimer;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.transform.Scale;
 
 // Scrollable, zoomable canvas viewport.
 public class CanvasViewport extends ScrollPane {
+
+    public enum NavMode { NONE, PAN, ZOOM }
 
     private static final double PADDING_X = 1300.0;
     private static final double PADDING_Y = 680.0;
@@ -33,6 +38,9 @@ public class CanvasViewport extends ScrollPane {
 
     // Key-event handler for the active selection tool (set via setKeyHandler)
     private javafx.event.EventHandler<javafx.scene.input.KeyEvent> selectionKeyHandler;
+
+    private NavMode navMode = NavMode.NONE;
+    private double panStartX, panStartY, panStartH, panStartV;
 
     private double targetScale = INITIAL_SCALE;
     private double anchorSceneX;
@@ -95,6 +103,39 @@ public class CanvasViewport extends ScrollPane {
                 selectionKeyHandler.handle(event);
             }
         });
+
+        // Navigation tool handlers (Hand pan, Zoom click).
+        workspace.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+            if (navMode == NavMode.PAN) {
+                panStartX = e.getSceneX(); panStartY = e.getSceneY();
+                panStartH = getHvalue();   panStartV = getVvalue();
+                workspace.setCursor(Cursor.CLOSED_HAND);
+                e.consume();
+            } else if (navMode == NavMode.ZOOM) {
+                double factor = (e.isShiftDown() || e.isAltDown()) ? 0.8 : 1.25;
+                requestZoom(factor, e.getSceneX(), e.getSceneY());
+                e.consume();
+            }
+        });
+        workspace.addEventFilter(MouseEvent.MOUSE_DRAGGED, e -> {
+            if (navMode == NavMode.PAN) {
+                double dx = e.getSceneX() - panStartX;
+                double dy = e.getSceneY() - panStartY;
+                Bounds vp = getViewportBounds();
+                Bounds ct = getContent().getBoundsInLocal();
+                double hRange = Math.max(1, ct.getWidth()  - vp.getWidth());
+                double vRange = Math.max(1, ct.getHeight() - vp.getHeight());
+                setHvalue(clamp(panStartH - dx / hRange, 0, 1));
+                setVvalue(clamp(panStartV - dy / vRange, 0, 1));
+                e.consume();
+            }
+        });
+        workspace.addEventFilter(MouseEvent.MOUSE_RELEASED, e -> {
+            if (navMode == NavMode.PAN) {
+                workspace.setCursor(Cursor.OPEN_HAND);
+                e.consume();
+            }
+        });
     }
 
     // Adds an overlay node with the same scale.
@@ -106,6 +147,45 @@ public class CanvasViewport extends ScrollPane {
     // Returns the current zoom scale.
     public double getScaleValue() {
         return scale.getX();
+    }
+
+    // Observable zoom scale (read-only; 1.0 = 100%).
+    public ReadOnlyDoubleProperty zoomProperty() {
+        return scale.xProperty();
+    }
+
+    // Zooms in one step (~25%) anchored at the viewport center.
+    public void zoomIn() {
+        Point2D sc = viewportCenter();
+        requestZoom(1.25, sc.getX(), sc.getY());
+    }
+
+    // Zooms out one step (~20%) anchored at the viewport center.
+    public void zoomOut() {
+        Point2D sc = viewportCenter();
+        requestZoom(0.8, sc.getX(), sc.getY());
+    }
+
+    // Zooms to an absolute scale (e.g., 1.0 = 100%) anchored at the viewport center.
+    public void zoomTo(double absoluteScale) {
+        double current = scale.getX();
+        if (current == 0) return;
+        Point2D sc = viewportCenter();
+        requestZoom(absoluteScale / current, sc.getX(), sc.getY());
+    }
+
+    private Point2D viewportCenter() {
+        Bounds vp = getViewportBounds();
+        return localToScene(vp.getWidth() / 2.0, vp.getHeight() / 2.0);
+    }
+
+    public void setNavMode(NavMode mode) {
+        this.navMode = mode;
+        switch (mode) {
+            case PAN  -> workspace.setCursor(Cursor.OPEN_HAND);
+            case ZOOM -> workspace.setCursor(Cursor.CROSSHAIR);
+            default   -> workspace.setCursor(Cursor.DEFAULT);
+        }
     }
 
     // Sets a key-event handler for forwarded events.

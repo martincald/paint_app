@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Paint App" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.martinpaint.Main" />
-    <option name="VM_PARAMETERS" value="--module-path /Users/martin_calderon/Downloads/javafx-sdk-26/lib --add-modules javafx.controls,javafx.fxml,javafx.swing,javafx.web --enable-native-access=javafx.graphics -Djava.library.path=/Users/martin_calderon/Downloads/javafx-sdk-26/lib -Xdock:name=&quot;Paint App&quot; -Xdock:icon=resources/images/app_icon.png" />
     <module name="Paint App" />
+    <option name="VM_PARAMETERS" value="--module-path $USER_HOME$/Downloads/javafx-sdk-26/lib --add-modules javafx.controls,javafx.fxml,javafx.swing,javafx.web --enable-native-access=javafx.graphics -Djava.library.path=$USER_HOME$/Downloads/javafx-sdk-26/lib -Xdock:name=&quot;Paint App&quot; -Xdock:icon=resources/images/app_icon.png --enable-native-access=ALL-UNNAMED" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

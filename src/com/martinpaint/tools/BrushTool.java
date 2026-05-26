@@ -11,9 +11,9 @@ public class BrushTool extends SizedTool implements OpacityAware {
 
     public BrushTool() { super(5.0); }
 
-    // Tell SizedTool to route strokes through the offscreen buffer
+    // Tell SizedTool to use the preview canvas and replay the stroke at opacity on release.
     @Override
-    protected boolean usesStrokeBuffer() { return true; }
+    protected boolean usesOpacityPreview() { return true; }
 
     // Provides the current opacity to SizedTool when flattening the buffer
     @Override

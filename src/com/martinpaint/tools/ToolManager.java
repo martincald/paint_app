@@ -28,8 +28,8 @@ public class ToolManager {
         this.colorManager  = colorManager;
 
         selectionTool = new SelectionTool();
-        tools = List.of(new BrushTool(), new EraserTool(), new FillTool(),
-                        new EyeDropperTool(), selectionTool);
+        tools = List.of(new BrushTool(), new PencilTool(), new EraserTool(), new FillTool(),
+                        new EyeDropperTool(), selectionTool, new HandTool(), new ZoomTool());
 
         for (Tool tool : tools) {
             toolsByName.put(tool.getName(), tool);
@@ -93,8 +93,9 @@ public class ToolManager {
         canvas.setOnMousePressed(event -> {
             Tool tool = activeTool.get();
             if (tool == null) return; // No tool selected, do nothing.
-            // SelectionTool and EyeDropperTool manage their own undo snapshots.
-            if (!(tool instanceof EyeDropperTool) && !(tool instanceof SelectionTool)) {
+            // These tools don't draw on the canvas; skip undo snapshot for them.
+            if (!(tool instanceof EyeDropperTool) && !(tool instanceof SelectionTool)
+                    && !(tool instanceof HandTool) && !(tool instanceof ZoomTool)) {
                 canvasManager.saveStateForUndo();
             }
             tool.onMousePressed(event.getX(), event.getY(), gc);

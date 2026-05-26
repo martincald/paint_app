@@ -48,7 +48,7 @@ public class EyeDropperTool extends Tool {
 
     @Override
     public String getName() {
-        return "Eye Dropper";
+        return "Eyedropper";
     }
 
     @Override

@@ -9,37 +9,40 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-// Shows the active tools settings.
+// Shows the active tool's settings below a panel header.
 public class ToolSettingsContainer extends VBox {
 
-    private static final String PLACEHOLDER_TEXT = "This tool has no settings.";
+    private static final String PLACEHOLDER_TEXT = "No options for this tool.";
 
     private final StackPane contentArea;
     private final Label     placeholder;
 
     public ToolSettingsContainer(ToolManager toolManager) {
-        setSpacing(10);
-        setPadding(new Insets(4, 8, 4, 8));
-        setAlignment(Pos.TOP_CENTER);
-        setFillWidth(true);
+        getStyleClass().add("panel-box");
 
-        Label title = new Label("Tool settings");
-        title.getStyleClass().add("section-title");
+        // ── Panel header ──────────────────────────────────────────
+        var header = ColorHistoryPanel.panelHeader("PROPERTIES");
+        var resetBtn = ColorHistoryPanel.headerBtn("↺");
+        resetBtn.setTooltip(new javafx.scene.control.Tooltip("Reset defaults"));
+        ((javafx.scene.layout.HBox) header.getChildren().get(header.getChildren().size() - 1))
+            .getChildren().add(resetBtn);
 
+        // ── Content area ──────────────────────────────────────────
         placeholder = new Label(PLACEHOLDER_TEXT);
         placeholder.getStyleClass().add("placeholder-text");
         placeholder.setWrapText(true);
-        placeholder.setMaxWidth(240);
+        placeholder.setMaxWidth(220);
         placeholder.setAlignment(Pos.CENTER);
 
         contentArea = new StackPane();
-        contentArea.setAlignment(Pos.TOP_CENTER);
+        contentArea.setAlignment(Pos.TOP_LEFT);
+        contentArea.setPadding(new Insets(10));
 
-        getChildren().addAll(title, contentArea);
+        getChildren().addAll(header, contentArea);
 
         showSettingsFor(toolManager.getActiveTool());
         toolManager.activeToolProperty()
-                .addListener((_, _, newT) -> showSettingsFor(newT));
+                .addListener((_, _, newTool) -> showSettingsFor(newTool));
     }
 
     private void showSettingsFor(Tool tool) {

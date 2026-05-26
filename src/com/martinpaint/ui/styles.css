@@ -1,188 +1,434 @@
-/* color styles for the application */
-/* Color tokens.*/
+
+/* ─────────────────────────────────────────────────────────────────
+   Paint App — Dark Professional UI
+   Adobe Illustrator-inspired deep neutral palette
+   ───────────────────────────────────────────────────────────────── */
+
+/* ── Global tokens ─────────────────────────────────────────────── */
 .root {
-    -fx-bg-app:        #3A3A3A;   /* gray void behind canvas + panel */
-    -fx-bg-panel:      #2B2B2B;   /* side panel background           */
-    -fx-bg-slot:       #3C3F41;   /* tool slot background            */
-    -fx-bg-slot-empty: #34373A;   /* placeholder slot background     */
-    -fx-bg-button:     #F2F2F2;   /* light primary button background */
-    -fx-bg-button-hover:#FFFFFF;
-    -fx-accent-blue:   #5294E2;   /* selected tool highlight         */
-    -fx-text-primary:  #ECECEC;
-    -fx-text-secondary:#BFBFBF;
-    -fx-text-on-light: #1E1E1E;
-    -fx-divider:       #FFFFFF;
+    paint-bg-app:        #1c1c1c;
+    paint-bg-chrome:     #232323;
+    paint-bg-panel:      #2b2b2b;
+    paint-bg-elev:       #383838;
+    paint-bg-hover:      #3a3a3a;
+    paint-bg-active:     #444444;
+    paint-bg-canvas:     #545454;
+    paint-bg-inset:      #1a1a1a;
+    paint-border-hard:   #111111;
+    paint-border-soft:   #393939;
+    paint-border-div:    #1e1e1e;
+    paint-text:          #e6e6e6;
+    paint-text-mid:      #b8b8b8;
+    paint-text-dim:      #8a8a8a;
+    paint-text-faint:    #5e5e5e;
+    paint-accent:        #2f8af7;
+    paint-danger:        #e25757;
 
     -fx-font-family: "Inter", "Helvetica Neue", "SF Pro Text", "Segoe UI", Arial, sans-serif;
-    -fx-background-color: -fx-bg-app;
+    -fx-font-size: 12px;
+    -fx-background-color: paint-bg-app;
+    -fx-text-fill: paint-text;
 }
 
-/* Side panel*/
-.side-panel-root {
-    -fx-background-color: transparent;
-}
-
-.side-panel-menu {
-    -fx-background-color: -fx-bg-panel;
-}
-
-.side-panel-scroll {
-    -fx-background: -fx-bg-panel;
-    -fx-background-color: -fx-bg-panel;
-    -fx-border-color: transparent;
-    -fx-padding: 0;
-}
-.side-panel-scroll > .viewport {
-    -fx-background-color: -fx-bg-panel;
-}
-.side-panel-scroll .scroll-bar:vertical {
-    -fx-background-color: transparent;
-    -fx-pref-width: 6;
-}
-.side-panel-scroll .scroll-bar:vertical .thumb {
-    -fx-background-color: #555;
-    -fx-background-radius: 3;
-}
-.side-panel-scroll .scroll-bar:vertical .track,
-.side-panel-scroll .scroll-bar:vertical .increment-button,
-.side-panel-scroll .scroll-bar:vertical .decrement-button,
-.side-panel-scroll .scroll-bar:vertical .increment-arrow,
-.side-panel-scroll .scroll-bar:vertical .decrement-arrow {
-    -fx-background-color: transparent;
-    -fx-padding: 0;
-    -fx-shape: " ";
-}
-
-/* section dividers */
-.divider {
-    -fx-background-color: -fx-divider;
-    -fx-pref-height: 1;
-    -fx-min-height: 1;
-    -fx-max-height: 1;
-    -fx-opacity: 0.85;
-}
-
-
-/* Section titles*/
-.section-title {
-    -fx-text-fill: -fx-text-primary;
-    -fx-font-size: 15px;
-    -fx-font-weight: 600;
-    -fx-padding: 0 0 4 0;
-}
-
-/* PRIMARY BUTTONS Export and import*/
-.primary-button {
-    -fx-background-color: -fx-bg-button;
-    -fx-text-fill: -fx-text-on-light;
-    -fx-font-size: 14px;
-    -fx-font-weight: 600;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-border-color: transparent;
-    -fx-cursor: hand;
-    -fx-padding: 10 16 10 16;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 6, 0, 0, 1);
-}
-.primary-button:hover  { -fx-background-color: -fx-bg-button-hover; }
-.primary-button:pressed{ -fx-background-color: #E0E0E0; }
-
-/* Tool slots */
-.tool-slot {
-    -fx-background-color: -fx-bg-slot;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-border-color: transparent;
-    -fx-padding: 8;
-    -fx-cursor: hand;
-}
-.tool-slot:hover { -fx-background-color: derive(-fx-bg-slot, 12%); }
-
-.tool-slot:selected {
-    -fx-background-color: -fx-accent-blue;
-    -fx-background-radius: 8;
-}
-.tool-slot:selected:hover { -fx-background-color: derive(-fx-accent-blue, -8%); }
-
-.tool-slot-empty {
-    -fx-background-color: -fx-bg-slot-empty;
-    -fx-background-radius: 8;
-    -fx-opacity: 0.4;
-}
-
-/*  7. Tool-settings placeholder text  */
-.placeholder-text {
-    -fx-text-fill: -fx-text-secondary;
-    -fx-font-size: 13px;
-    -fx-text-alignment: center;
-    -fx-wrap-text: true;
-}
-
-/*  8. Slider (Tool settings)  */
-.size-label {
-    -fx-text-fill: -fx-text-secondary;
-    -fx-font-size: 13px;
-}
-.slider .track   { -fx-background-color: #444; -fx-background-radius: 3; }
-.slider .thumb   { -fx-background-color: -fx-text-primary; -fx-background-radius: 50%; }
-.slider:focused .thumb { -fx-background-color: -fx-accent-blue; }
-
-/*  9. Color slots (rounded squares)  */
-.color-slot,
-.color-slot-add {
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-border-color: rgba(255,255,255,0.10);
-    -fx-border-width: 1;
-    -fx-cursor: hand;
-}
-.color-slot:hover,
-.color-slot-add:hover {
-    -fx-border-color: rgba(255,255,255,0.45);
-}
-
-/*  + symbol on the add tile */
-.color-add-plus {
-    -fx-text-fill: -fx-text-on-light;
-    -fx-font-size: 30px;
-    -fx-font-weight: 200;
-}
-
-/*  10. Toggle button  */
-.panel-toggle {
-    -fx-background-color: -fx-bg-panel;
-    -fx-text-fill: -fx-text-primary;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-background-radius: 0 8 8 0;
-    -fx-border-color: transparent;
-    -fx-padding: 16 5 16 5;
-    -fx-cursor: hand;
-}
-.panel-toggle:hover { -fx-background-color: derive(-fx-bg-panel, 10%); }
-
-/*  11. Canvas viewport (gray workspace)  */
+/* ── Canvas viewport ─────────────────────────────────────────────── */
 .canvas-viewport,
 .canvas-viewport > .viewport {
-    -fx-background: -fx-bg-app;
-    -fx-background-color: -fx-bg-app;
+    -fx-background: paint-bg-canvas;
+    -fx-background-color: paint-bg-canvas;
     -fx-border-color: transparent;
 }
 .canvas-workspace {
-    -fx-background-color: -fx-bg-app;
+    -fx-background-color: paint-bg-canvas;
 }
 .canvas-viewport .scroll-bar:vertical,
 .canvas-viewport .scroll-bar:horizontal {
     -fx-background-color: transparent;
-    -fx-pref-width: 8;
-    -fx-pref-height: 8;
+    -fx-pref-width: 10;
+    -fx-pref-height: 10;
 }
 .canvas-viewport .scroll-bar .thumb {
-    -fx-background-color: #555;
-    -fx-background-radius: 4;
+    -fx-background-color: #4a4a4a;
+    -fx-background-radius: 5;
+    -fx-border-color: transparent;
+}
+.canvas-viewport .scroll-bar .track,
+.canvas-viewport .scroll-bar .track-background {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+.canvas-viewport .scroll-bar .increment-button,
+.canvas-viewport .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-width: 0;
+    -fx-min-width: 0;
+    -fx-max-width: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+.canvas-viewport .scroll-bar .increment-arrow,
+.canvas-viewport .scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-shape: " ";
+    -fx-pref-width: 0;
+    -fx-min-width: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
 }
 
-/*  12. Selection Overlay  */
+/* ── Tool rail (left, narrow 48px) ──────────────────────────────── */
+.tool-rail {
+    -fx-background-color: paint-bg-chrome;
+    -fx-border-color: transparent paint-border-hard transparent transparent;
+    -fx-border-width: 0 1 0 0;
+    -fx-pref-width: 48;
+    -fx-min-width: 48;
+    -fx-max-width: 48;
+}
+
+.tool-btn {
+    -fx-background-color: transparent;
+    -fx-background-radius: 3;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-text-fill: paint-text-mid;
+    -fx-pref-width: 36;
+    -fx-min-width: 36;
+    -fx-max-width: 36;
+    -fx-pref-height: 36;
+    -fx-min-height: 36;
+    -fx-max-height: 36;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+    -fx-graphic-text-gap: 0;
+}
+.tool-btn:hover {
+    -fx-background-color: paint-bg-hover;
+    -fx-text-fill: paint-text;
+}
+.tool-btn:selected {
+    -fx-background-color: #545454, paint-bg-active;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 3, 2;
+    -fx-text-fill: paint-text;
+}
+.tool-btn:selected:hover {
+    -fx-background-color: #606060, #4e4e4e;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 3, 2;
+}
+
+.tool-separator {
+    -fx-background-color: paint-border-div;
+    -fx-pref-height: 1;
+    -fx-min-height: 1;
+    -fx-max-height: 1;
+    -fx-pref-width: 24;
+    -fx-min-width: 24;
+    -fx-max-width: 24;
+}
+
+/* ── Right panel column (280px) ─────────────────────────────────── */
+.panel-column {
+    -fx-background-color: paint-bg-chrome;
+    -fx-border-color: transparent transparent transparent paint-border-hard;
+    -fx-border-width: 0 0 0 1;
+    -fx-pref-width: 280;
+    -fx-min-width: 280;
+    -fx-max-width: 280;
+}
+
+/* Panel container with bottom separator */
+.panel-box {
+    -fx-background-color: paint-bg-chrome;
+    -fx-border-color: transparent transparent paint-border-div transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Panel header strip */
+.panel-header {
+    -fx-background-color: paint-bg-chrome;
+    -fx-border-color: transparent transparent paint-border-div transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-pref-height: 26;
+    -fx-min-height: 26;
+    -fx-max-height: 26;
+    -fx-padding: 0 8 0 10;
+}
+
+/* Panel title label (uppercase via Java code) */
+.panel-title {
+    -fx-text-fill: paint-text-mid;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* Panel action icon buttons */
+.panel-action-btn {
+    -fx-background-color: transparent;
+    -fx-background-radius: 2;
+    -fx-border-color: transparent;
+    -fx-text-fill: paint-text-dim;
+    -fx-font-size: 12px;
+    -fx-pref-width: 18;
+    -fx-pref-height: 18;
+    -fx-min-width: 18;
+    -fx-min-height: 18;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+.panel-action-btn:hover {
+    -fx-background-color: paint-bg-hover;
+    -fx-text-fill: paint-text;
+}
+
+/* ── Color swatches panel ─────────────────────────────────────────── */
+.current-color-chip {
+    -fx-background-radius: 2;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #000000, 3, 0, 0, 1);
+}
+.current-color-chip:hover {
+    -fx-effect: dropshadow(gaussian, #000000, 5, 0, 0, 1);
+}
+
+.color-slot {
+    -fx-background-radius: 2;
+    -fx-border-radius: 2;
+    -fx-border-color: rgba(0, 0, 0, 0.5);
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+.color-slot:hover {
+    -fx-border-color: paint-accent;
+    -fx-border-width: 1.5;
+}
+
+.color-slot-add {
+    -fx-background-radius: 2;
+    -fx-border-radius: 2;
+    -fx-border-color: paint-border-soft;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-background-color: paint-bg-elev;
+}
+.color-slot-add:hover {
+    -fx-border-color: paint-accent;
+    -fx-background-color: paint-bg-hover;
+}
+
+.color-add-plus {
+    -fx-text-fill: paint-text-dim;
+    -fx-font-size: 18px;
+    -fx-font-weight: 300;
+}
+
+/* Section title inside panels */
+.section-title {
+    -fx-text-fill: paint-text-mid;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* Divider inside panels */
+.divider {
+    -fx-background-color: paint-border-div;
+    -fx-pref-height: 1;
+    -fx-min-height: 1;
+    -fx-max-height: 1;
+}
+
+/* ── Tool settings sliders ─────────────────────────────────────────── */
+.tool-slider-label {
+    -fx-text-fill: paint-text-dim;
+    -fx-font-size: 11px;
+}
+
+.tool-slider .track {
+    -fx-background-color: paint-bg-inset, paint-border-soft, paint-bg-inset;
+    -fx-background-insets: 0, 0 0 0 0, 1;
+    -fx-background-radius: 2, 2, 2;
+    -fx-pref-height: 4;
+}
+.tool-slider .thumb {
+    -fx-background-color: #d4d4d4;
+    -fx-background-radius: 50%;
+    -fx-pref-width: 10;
+    -fx-pref-height: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 2, 0, 0, 0);
+}
+.tool-slider:focused .thumb {
+    -fx-background-color: paint-accent;
+}
+.tool-slider {
+    -fx-control-inner-background: paint-bg-inset;
+    -fx-accent: paint-accent;
+}
+
+.placeholder-text {
+    -fx-text-fill: paint-text-faint;
+    -fx-font-size: 11px;
+    -fx-font-style: italic;
+}
+
+/* ── Options bar (below system menu bar) ────────────────────────── */
+.options-bar {
+    -fx-background-color: paint-bg-chrome;
+    -fx-border-color: transparent transparent paint-border-hard transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-pref-height: 32;
+    -fx-min-height: 32;
+    -fx-max-height: 32;
+}
+
+.options-tool-name {
+    -fx-text-fill: paint-text;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.options-label {
+    -fx-text-fill: paint-text-dim;
+    -fx-font-size: 11px;
+}
+
+.options-pill {
+    -fx-background-color: paint-bg-inset;
+    -fx-border-color: paint-border-soft;
+    -fx-border-width: 1;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-text-fill: paint-text;
+    -fx-font-size: 11px;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+    -fx-padding: 1 6 1 6;
+}
+
+.options-divider {
+    -fx-background-color: paint-border-div;
+    -fx-pref-width: 1;
+    -fx-min-width: 1;
+    -fx-pref-height: 16;
+    -fx-min-height: 16;
+    -fx-max-height: 16;
+}
+
+/* ── Canvas tab bar ──────────────────────────────────────────────── */
+.canvas-tab-bar {
+    -fx-background-color: paint-bg-chrome;
+    -fx-border-color: transparent transparent paint-border-hard transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-pref-height: 28;
+    -fx-min-height: 28;
+    -fx-max-height: 28;
+}
+
+.canvas-tab-active {
+    -fx-background-color: paint-bg-canvas;
+    -fx-border-color: transparent paint-border-div transparent transparent;
+    -fx-border-width: 0 1 0 0;
+    -fx-padding: 0 14 0 14;
+    -fx-pref-height: 28;
+    -fx-min-height: 28;
+    /* Blue top accent line */
+    -fx-background-insets: 0, 0 0 0 0;
+}
+
+/* Accent line on the active tab top edge using background layers */
+.canvas-tab-active {
+    -fx-background-color: paint-accent, paint-bg-canvas;
+    -fx-background-insets: 0 0 26 0, 2 0 0 0;
+}
+
+.canvas-tab-name {
+    -fx-text-fill: paint-text;
+    -fx-font-size: 11px;
+    -fx-font-weight: 500;
+}
+
+.canvas-tab-meta {
+    -fx-text-fill: paint-text-dim;
+    -fx-font-size: 11px;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+}
+
+/* ── Status bar (bottom 22px) ────────────────────────────────────── */
+.status-bar {
+    -fx-background-color: paint-bg-chrome;
+    -fx-border-color: paint-border-hard transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-pref-height: 22;
+    -fx-min-height: 22;
+    -fx-max-height: 22;
+    -fx-padding: 0 10 0 10;
+}
+
+.status-label {
+    -fx-text-fill: paint-text-dim;
+    -fx-font-size: 11px;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+}
+
+.status-label-accent {
+    -fx-text-fill: paint-accent;
+    -fx-font-size: 11px;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+}
+
+.status-sep {
+    -fx-background-color: paint-border-div;
+    -fx-pref-width: 1;
+    -fx-min-width: 1;
+    -fx-max-width: 1;
+    -fx-pref-height: 14;
+    -fx-min-height: 14;
+    -fx-max-height: 14;
+}
+
+.zoom-control {
+    -fx-background-color: paint-bg-inset;
+    -fx-border-color: paint-border-soft;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-pref-height: 18;
+    -fx-min-height: 18;
+    -fx-max-height: 18;
+}
+
+.zoom-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: paint-text-mid;
+    -fx-border-color: transparent;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+    -fx-font-size: 12px;
+    -fx-pref-width: 20;
+    -fx-pref-height: 18;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+.zoom-btn:hover {
+    -fx-background-color: paint-bg-hover;
+    -fx-text-fill: paint-text;
+}
+
+.zoom-label {
+    -fx-background-color: transparent;
+    -fx-text-fill: paint-text;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+    -fx-font-size: 11px;
+    -fx-border-color: transparent paint-border-soft;
+    -fx-border-width: 0 1 0 1;
+    -fx-pref-width: 52;
+    -fx-min-width: 52;
+    -fx-padding: 0 4 0 4;
+    -fx-alignment: center;
+}
+
+/* ── Selection marquee ────────────────────────────────────────────── */
 .selection-marquee {
     -fx-fill: transparent;
     -fx-stroke: black;
@@ -196,13 +442,288 @@
     -fx-stroke-width: 1.0;
 }
 
-/*  13. Tool Settings  */
-.tool-slider-label {
-    -fx-text-fill: #AAAAAA;
-    -fx-font-size: 13px;
+/* ── Scrollbars (global) ──────────────────────────────────────────── */
+.scroll-bar:vertical,
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-pref-width: 10;
+    -fx-pref-height: 10;
+}
+.scroll-bar .thumb {
+    -fx-background-color: #4a4a4a;
+    -fx-background-radius: 5;
+}
+.scroll-bar .track,
+.scroll-bar .track-background {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-width: 0;
+    -fx-min-width: 0;
+    -fx-max-width: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-shape: " ";
+    -fx-pref-width: 0;
+    -fx-min-width: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
 }
 
-.tool-slider {
-    -fx-control-inner-background: #3C3F41;
-    -fx-accent: #5294E2;
+/* Side panel scroll area */
+.side-panel-scroll {
+    -fx-background: paint-bg-chrome;
+    -fx-background-color: paint-bg-chrome;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+.side-panel-scroll > .viewport {
+    -fx-background-color: paint-bg-chrome;
+}
+.side-panel-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 5;
+    -fx-min-width: 5;
+    -fx-max-width: 5;
+}
+.side-panel-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #4a4a4a;
+    -fx-background-radius: 3;
+    -fx-border-color: transparent;
+}
+.side-panel-scroll .scroll-bar:vertical .track,
+.side-panel-scroll .scroll-bar:vertical .track-background {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+.side-panel-scroll .scroll-bar:vertical .increment-button,
+.side-panel-scroll .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+.side-panel-scroll .scroll-bar:vertical .increment-arrow,
+.side-panel-scroll .scroll-bar:vertical .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-shape: " ";
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+}
+/* Also hide horizontal scrollbar entirely */
+.side-panel-scroll .scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+
+/* ── Tool key-hint label ─────────────────────────────────────────── */
+.tool-key-hint {
+    -fx-text-fill: paint-text-faint;
+    -fx-font-size: 7px;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+    -fx-padding: 0 1 1 0;
+    -fx-cursor: default;
+    -fx-mouse-transparent: true;
+}
+
+/* ── Rail FG/BG color chip ───────────────────────────────────────── */
+.rail-color-chip {
+    -fx-background-radius: 2;
+    -fx-border-color: #555555;
+    -fx-border-width: 0.5;
+    -fx-border-radius: 2;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #000000, 2, 0, 0, 1);
+}
+
+/* ── Color picker panel ──────────────────────────────────────────── */
+
+/* FG/BG chips in the picker */
+.color-chip-fg,
+.color-chip-bg {
+    -fx-background-radius: 2;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #000000, 4, 0, 0, 1);
+}
+
+/* HSV picker square */
+.picker {
+    -fx-background-radius: 2;
+    -fx-cursor: crosshair;
+    -fx-effect: dropshadow(gaussian, #000000, 3, 0, 0, 0);
+}
+
+/* Ring indicator inside the picker square */
+.picker-ring {
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 50%;
+    -fx-background-radius: 50%;
+    -fx-effect: dropshadow(gaussian, black, 2, 0, 0, 0);
+}
+
+/* Hue strip — static rainbow gradient */
+.hue-strip {
+    -fx-background-color:
+        linear-gradient(to right,
+          #ff0000   0%,
+          #ffff00  17%,
+          #00ff00  33%,
+          #00ffff  50%,
+          #0000ff  67%,
+          #ff00ff  83%,
+          #ff0000 100%);
+    -fx-background-radius: 2;
+    -fx-border-color: paint-border-soft;
+    -fx-border-width: 0.5;
+    -fx-border-radius: 2;
+    -fx-cursor: h-resize;
+}
+
+/* Hue strip drag thumb */
+.hue-thumb {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 1;
+    -fx-border-color: #000000;
+    -fx-border-width: 0.5;
+    -fx-border-radius: 1;
+    -fx-effect: dropshadow(gaussian, black, 2, 0, 0, 0);
+}
+
+/* RGB channel slider track (gradient set via inline style per channel) */
+.slider-track {
+    -fx-background-radius: 1;
+    -fx-border-color: paint-border-soft;
+    -fx-border-width: 0.5;
+    -fx-border-radius: 1;
+    -fx-cursor: h-resize;
+}
+
+/* RGB slider drag thumb */
+.slider-thumb {
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 1;
+    -fx-border-color: #000000;
+    -fx-border-width: 0.5;
+    -fx-border-radius: 1;
+    -fx-effect: dropshadow(gaussian, black, 2, 0, 0, 0);
+}
+
+/* Channel label (R / G / B) */
+.slider-ch {
+    -fx-text-fill: paint-text-dim;
+    -fx-font-size: 10px;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+    -fx-alignment: center;
+}
+
+/* Numeric value box beside a slider */
+.val {
+    -fx-background-color: paint-bg-inset;
+    -fx-border-color: paint-border-soft;
+    -fx-border-width: 1;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-text-fill: paint-text;
+    -fx-font-size: 10px;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+    -fx-alignment: center-right;
+    -fx-padding: 2 4 2 4;
+}
+.val:focused {
+    -fx-border-color: paint-accent;
+}
+
+/* Hex input field */
+.hex {
+    -fx-background-color: paint-bg-inset;
+    -fx-border-color: paint-border-soft;
+    -fx-border-width: 1;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-text-fill: paint-text;
+    -fx-font-size: 11px;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+    -fx-padding: 3 6 3 6;
+}
+.hex:focused {
+    -fx-border-color: paint-accent;
+}
+
+/* HEX label */
+.hex-label {
+    -fx-text-fill: paint-text-dim;
+    -fx-font-size: 10px;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+}
+
+/* ── Properties panel (prop-row layout) ──────────────────────────── */
+
+.prop-grid {
+    -fx-background-color: transparent;
+}
+
+.prop-row {
+    -fx-background-color: transparent;
+}
+
+.prop-row-label {
+    -fx-text-fill: paint-text-dim;
+    -fx-font-size: 11px;
+}
+
+/* Restyled slider for prop-rows — thin track, accent thumb */
+.prop-slider .track {
+    -fx-background-color: paint-bg-inset, paint-border-soft, paint-bg-inset;
+    -fx-background-insets: 0, 0 0 0 0, 1;
+    -fx-background-radius: 2, 2, 2;
+    -fx-pref-height: 4;
+}
+.prop-slider .thumb {
+    -fx-background-color: #d4d4d4;
+    -fx-background-radius: 50%;
+    -fx-pref-width: 10;
+    -fx-pref-height: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 2, 0, 0, 0);
+}
+.prop-slider:focused .thumb {
+    -fx-background-color: paint-accent;
+}
+.prop-slider {
+    -fx-control-inner-background: paint-bg-inset;
+    -fx-accent: paint-accent;
+}
+
+/* Numeric value box in prop-rows */
+.prop-number {
+    -fx-background-color: paint-bg-inset;
+    -fx-border-color: paint-border-soft;
+    -fx-border-width: 1;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-text-fill: paint-text;
+    -fx-font-size: 10px;
+    -fx-font-family: "Menlo", "Courier New", "Consolas", monospace;
+    -fx-alignment: center-right;
+    -fx-padding: 2 4 2 4;
+}
+.prop-number:focused {
+    -fx-border-color: paint-accent;
 }
