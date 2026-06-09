@@ -5,7 +5,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
 // Wraps system clipboard.
-public class ClipboardService {
+class ClipboardService {
 
     private static final Clipboard CLIPBOARD = Clipboard.getSystemClipboard();
 
@@ -25,11 +25,16 @@ public class ClipboardService {
     public WritableImage paste() {
         if (!CLIPBOARD.hasImage()) return null;
         javafx.scene.image.Image raw = CLIPBOARD.getImage();
-        WritableImage out = new WritableImage((int) raw.getWidth(), (int) raw.getHeight());
+        int width = (int) raw.getWidth();
+        int height = (int) raw.getHeight();
+        var reader = raw.getPixelReader();
+        if (width <= 0 || height <= 0 || reader == null) return null;
+
+        WritableImage out = new WritableImage(width, height);
         out.getPixelWriter().setPixels(
                 0, 0,
-                (int) raw.getWidth(), (int) raw.getHeight(),
-                raw.getPixelReader(),
+                width, height,
+                reader,
                 0, 0
         );
         return out;

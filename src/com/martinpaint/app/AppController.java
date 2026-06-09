@@ -7,8 +7,8 @@ import com.martinpaint.tools.ToolManager;
 import com.martinpaint.ui.MainWindow;
 import javafx.stage.Stage;
 
+/** Application root: wires together the canvas, tool, color, and file subsystems. */
 public class AppController {
-    // app controller class.
     private final Stage stage;
 
     private ColorManager colorManager;

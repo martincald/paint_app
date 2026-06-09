@@ -12,7 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
-// Bottom status bar: zoom controls, canvas info, active tool, status indicator.
+/** Bottom status bar: zoom controls, canvas info, active tool, status indicator. */
 public class StatusBar extends HBox {
 
     public StatusBar(AppController controller, CanvasViewport viewport) {
@@ -47,7 +47,7 @@ public class StatusBar extends HBox {
 
         Button zoom100 = new Button("100%");
         zoom100.getStyleClass().add("zoom-btn");
-        zoom100.setStyle("-fx-pref-width: 40; -fx-text-fill: #8a8a8a;");
+        zoom100.getStyleClass().add("zoom-100-btn");
         zoom100.setOnAction(_ -> viewport.zoomTo(1.0));
 
         // ── Separators and info labels ─────────────────────────────

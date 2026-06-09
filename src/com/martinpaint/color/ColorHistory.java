@@ -12,7 +12,8 @@ public class ColorHistory {
     private final ObservableList<Color> colors = FXCollections.observableArrayList();
 
     public void add(Color color) {
-        if (color == null || colors.contains(color)) return;
+        if (color == null) return;
+        colors.remove(color);
         colors.add(0, color);
         if (colors.size() > MAX_CAPACITY) {
             colors.remove(colors.size() - 1);

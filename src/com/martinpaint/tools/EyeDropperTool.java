@@ -1,21 +1,23 @@
 package com.martinpaint.tools;
 
 import com.martinpaint.canvas.CanvasManager;
-import com.martinpaint.io.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-// Picks the color of a drawn pixel.
+/** Picks the color of a drawn pixel. */
 public class EyeDropperTool extends Tool {
 
     private PixelReader reader;
 
+    public EyeDropperTool() {
+        super(ToolSpec.EYEDROPPER);
+    }
+
     @Override
     public void onMousePressed(double x, double y, GraphicsContext gc) {
-        WritableImage snapshot = CanvasManager.snapshotUnscaled(gc.getCanvas());
+        WritableImage snapshot = canvasManager.snapshotComposite();
         reader = snapshot.getPixelReader();
         pickColor(x, y, gc);
     }
@@ -44,15 +46,5 @@ public class EyeDropperTool extends Tool {
         if (picked.getOpacity() <= 0.001) return;
 
         colorManager.setCurrentColor(picked);
-    }
-
-    @Override
-    public String getName() {
-        return "Eyedropper";
-    }
-
-    @Override
-    public Image getIcon() {
-        return ImageLoader.load("resources/images/eyedropper.png");
     }
 }

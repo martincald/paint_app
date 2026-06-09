@@ -15,14 +15,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-// Builds the tool settings panel content. Uses the design's prop-row layout.
+import java.util.function.IntConsumer;
+
+/** Builds the active tool settings panel content. */
 final class ToolSettingsView {
 
     private ToolSettingsView() {}
 
     static Node create(Tool tool) {
         VBox grid = new VBox(6);
-        grid.getStyleClass().add("prop-grid");
         grid.setPadding(new Insets(8, 10, 8, 10));
 
         if (tool instanceof SizedTool sized) {
@@ -38,59 +39,43 @@ final class ToolSettingsView {
         return grid.getChildren().isEmpty() ? null : grid;
     }
 
-    // One prop-row: label (80px) + slider + value box
+    // One property row: label + slider + value box.
     private static HBox propRow(String labelText, Node control) {
         Label lbl = new Label(labelText);
         lbl.getStyleClass().add("prop-row-label");
         lbl.setPrefWidth(72);
         lbl.setMinWidth(72);
         HBox row = new HBox(8, lbl, control);
-        row.getStyleClass().add("prop-row");
         row.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(control, Priority.ALWAYS);
         return row;
     }
 
     private static HBox sizeSlider(SizedTool tool) {
-        Slider slider = styledSlider(1, 50, tool.getSize());
-        TextField valBox = valueBox(String.valueOf((int) tool.getSize()));
-        slider.valueProperty().addListener((_, oldVal, newVal) -> {
-            tool.setSize(newVal.doubleValue());
-            valBox.setText(String.valueOf((int) tool.getSize()));
-            if ((int) oldVal.doubleValue() != (int) newVal.doubleValue()) HapticFeedback.sliderTick();
-        });
-        valBox.setOnAction(_ -> parseAndApply(valBox, 1, 50, slider));
-        valBox.focusedProperty().addListener((_, _, focused) -> {
-            if (!focused) parseAndApply(valBox, 1, 50, slider);
-        });
-        return sliderRow(slider, valBox);
+        return numericSlider(1, 50, (int) tool.getSize(), "", tool::setSize);
     }
 
     private static HBox opacitySlider(OpacityAware tool) {
         int initPct = (int) Math.round(tool.getOpacity() * 100);
-        Slider slider = styledSlider(1, 100, initPct);
-        TextField valBox = valueBox(initPct + "%");
-        slider.valueProperty().addListener((_, oldVal, newVal) -> {
-            int pct = (int) newVal.doubleValue();
-            tool.setOpacity(pct / 100.0);
-            valBox.setText(pct + "%");
-            if ((int) oldVal.doubleValue() != pct) HapticFeedback.sliderTick();
-        });
-        return sliderRow(slider, valBox);
+        return numericSlider(1, 100, initPct, "%", pct -> tool.setOpacity(pct / 100.0));
     }
 
     private static HBox toleranceSlider(FillTool tool) {
-        Slider slider = styledSlider(0, 100, tool.getTolerance());
-        TextField valBox = valueBox(String.valueOf(tool.getTolerance()));
-        slider.valueProperty().addListener((_, _, newVal) -> {
+        return numericSlider(0, 100, tool.getTolerance(), "", tool::setTolerance);
+    }
+
+    private static HBox numericSlider(int min, int max, int initial, String suffix, IntConsumer apply) {
+        Slider slider = styledSlider(min, max, initial);
+        TextField valBox = valueBox(formatValue(initial, suffix));
+        slider.valueProperty().addListener((_, oldVal, newVal) -> {
             int v = newVal.intValue();
-            if (v != tool.getTolerance()) HapticFeedback.sliderTick();
-            tool.setTolerance(v);
-            valBox.setText(String.valueOf(v));
+            apply.accept(v);
+            valBox.setText(formatValue(v, suffix));
+            if (oldVal.intValue() != v) HapticFeedback.sliderTick();
         });
-        valBox.setOnAction(_ -> parseAndApply(valBox, 0, 100, slider));
+        valBox.setOnAction(_ -> parseAndApply(valBox, min, max, slider));
         valBox.focusedProperty().addListener((_, _, focused) -> {
-            if (!focused) parseAndApply(valBox, 0, 100, slider);
+            if (!focused) parseAndApply(valBox, min, max, slider);
         });
         return sliderRow(slider, valBox);
     }
@@ -122,7 +107,11 @@ final class ToolSettingsView {
         try {
             String raw = tf.getText().replaceAll("[^0-9.]", "");
             double v = Double.parseDouble(raw);
-            slider.setValue(Math.max(min, Math.min(max, v)));
+            slider.setValue(Math.clamp(v, min, max));
         } catch (NumberFormatException ignored) {}
+    }
+
+    private static String formatValue(int value, String suffix) {
+        return value + suffix;
     }
 }

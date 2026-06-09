@@ -1,16 +1,16 @@
 package com.martinpaint.tools;
 
-import com.martinpaint.io.ImageLoader;
 import com.martinpaint.selection.SelectionController;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
-// Selection tool for rectangular areas.
+/** Selection tool for rectangular areas. */
 public class SelectionTool extends Tool {
 
-    private static final String NAME = "Selection";
-
     private SelectionController controller;
+
+    public SelectionTool() {
+        super(ToolSpec.SELECTION);
+    }
 
     // Sets the shared SelectionController.
     public void setController(SelectionController controller) {
@@ -48,14 +48,5 @@ public class SelectionTool extends Tool {
     @Override
     public void onMouseReleased(double x, double y, GraphicsContext gc) {
         if (controller != null) controller.onCanvasReleased(x, y);
-    }
-
-
-    @Override
-    public String getName() { return NAME; }
-
-    @Override
-    public Image getIcon() {
-        return ImageLoader.load("resources/images/selection.png");
     }
 }

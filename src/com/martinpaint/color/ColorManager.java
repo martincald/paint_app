@@ -4,7 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 
-// Manages the current color and history.
+/** Manages the current color and history. */
 public class ColorManager {
 
     private final ObjectProperty<Color> currentColor    = new SimpleObjectProperty<>(Color.BLACK);

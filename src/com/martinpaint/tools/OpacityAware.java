@@ -1,6 +1,6 @@
 package com.martinpaint.tools;
 
-// Tools that support a opacity setting implement this
+/** Tools that support an opacity setting implement this. */
 public interface OpacityAware {
 
     // Returns the current opacity as a value between 0.0 and 1.0.

@@ -3,6 +3,11 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### Build artifacts ###
+dmg_build/
+*.dmg
+*.jar
+
 ### Eclipse ###
 .apt_generated
 .classpath

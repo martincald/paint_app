@@ -6,11 +6,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 
-import java.util.ArrayList;
-import java.util.List;
-
-// Base class for tools with a size setting (brush, eraser, etc.)
+/** Base class for tools with a size setting (brush, eraser, etc.) */
 public abstract class SizedTool extends Tool {
+
+    private static final double MIN_SIZE = 1.0;
+    private static final double MAX_SIZE = 50.0;
+
+    // Minimum squared distance between recorded stroke points (1.5 px).
+    // Filters near-duplicate points so the release-time replay stays lean.
+    private static final double MIN_STROKE_DIST_SQ = 2.25;
+
+    // Minimum squared movement to bother issuing a draw call (0.5 px).
+    private static final double MIN_DRAW_DIST_SQ = 0.25;
 
     private double size;
     private double lastX;
@@ -18,21 +25,37 @@ public abstract class SizedTool extends Tool {
 
     // Shared preview canvas provided by ToolManager.
     private Canvas previewCanvas;
+    // Cached GC for the preview canvas — avoids getGraphicsContext2D() on every drag event.
+    private GraphicsContext previewGc;
 
-    // Stroke points collected during a drag, used to replay the stroke on release.
-    // Each entry is [x, y].
-    private final List<double[]> strokePoints = new ArrayList<>();
+    // Start larger to avoid early reallocs on typical strokes.
+    private double[] strokeXs = new double[512];
+    private double[] strokeYs = new double[512];
+    private int strokePointCount;
 
-    protected SizedTool(double initialSize) {
-        this.size = initialSize;
+    protected SizedTool(ToolSpec spec) {
+        super(spec);
+        size = spec.defaultSize();
     }
 
     public double getSize() { return size; }
-    public void setSize(double size) { this.size = size; }
+    public void setSize(double size) {
+        double clamped = Math.clamp(size, MIN_SIZE, MAX_SIZE);
+        if (Double.compare(this.size, clamped) != 0) {
+            this.size = clamped;
+            markSettingsChanged();
+        }
+    }
+
+    @Override
+    public void resetSettings() {
+        setSize(getSpec().defaultSize());
+    }
 
     // Called by ToolManager to give the tool a reference to the shared preview canvas.
     public void setPreviewCanvas(Canvas canvas) {
         this.previewCanvas = canvas;
+        this.previewGc = canvas != null ? canvas.getGraphicsContext2D() : null;
     }
 
     // Subclasses override to true when they need per-stroke opacity (e.g. BrushTool).
@@ -47,28 +70,36 @@ public abstract class SizedTool extends Tool {
         lastY = y;
 
         if (usesOpacityPreview()) {
-            strokePoints.clear();
-            strokePoints.add(new double[]{x, y});
+            clearStrokePoints();
+            addStrokePoint(x, y);
 
             // Clear any leftover preview from the previous stroke.
             clearPreview();
 
             // Configure the preview canvas stroke style once at press time.
-            if (previewCanvas != null) {
-                configureStroke(previewCanvas.getGraphicsContext2D());
+            if (previewGc != null) {
+                configureStroke(previewGc);
             }
+        } else {
+            // Configure once per stroke — not on every drag event — saving 4 GC state
+            // changes (color, width, cap, join) per mouse-moved event.
+            configureStroke(gc);
         }
     }
 
     @Override
     public void onMouseDragged(double x, double y, GraphicsContext gc) {
+        double dx = x - lastX;
+        double dy = y - lastY;
+        // Skip truly sub-pixel movements — no visible change, no need to issue draw calls.
+        if (dx * dx + dy * dy < MIN_DRAW_DIST_SQ) return;
+
         if (usesOpacityPreview()) {
             // Record the point so we can replay the full stroke on release.
-            strokePoints.add(new double[]{x, y});
+            addStrokePoint(x, y);
 
             // Draw only the new segment onto the preview canvas — no snapshot needed.
-            if (previewCanvas != null) {
-                GraphicsContext previewGc = previewCanvas.getGraphicsContext2D();
+            if (previewGc != null) {
                 previewGc.beginPath();
                 previewGc.moveTo(lastX, lastY);
                 previewGc.lineTo(x, y);
@@ -77,7 +108,7 @@ public abstract class SizedTool extends Tool {
         } else {
             // Tools without opacity preview (eraser subclass overrides entirely, but
             // any future plain tool falls here) draw directly to the drawing canvas.
-            configureStroke(gc);
+            // configureStroke was already called in onMousePressed; no repeat needed.
             gc.beginPath();
             gc.moveTo(lastX, lastY);
             gc.lineTo(x, y);
@@ -90,9 +121,10 @@ public abstract class SizedTool extends Tool {
 
     @Override
     public void onMouseReleased(double x, double y, GraphicsContext gc) {
-        if (usesOpacityPreview() && !strokePoints.isEmpty()) {
+        if (usesOpacityPreview() && strokePointCount > 1) {
             // Clear the preview — we are about to commit the real stroke.
             clearPreview();
+            saveUndoState();
 
             // Replay the entire polyline as a single path so segment joins don't
             // accumulate alpha at low opacity. This is one draw call, no snapshot.
@@ -100,16 +132,18 @@ public abstract class SizedTool extends Tool {
             gc.setGlobalAlpha(currentOpacity());
             configureStroke(gc);
             gc.beginPath();
-            double[] first = strokePoints.get(0);
-            gc.moveTo(first[0], first[1]);
-            for (int i = 1; i < strokePoints.size(); i++) {
-                double[] pt = strokePoints.get(i);
-                gc.lineTo(pt[0], pt[1]);
+            gc.moveTo(strokeXs[0], strokeYs[0]);
+            for (int i = 1; i < strokePointCount; i++) {
+                gc.lineTo(strokeXs[i], strokeYs[i]);
             }
             gc.stroke();
             gc.restore();
+            markDrawingChanged();
 
-            strokePoints.clear();
+            clearStrokePoints();
+        } else if (usesOpacityPreview()) {
+            clearPreview();
+            clearStrokePoints();
         }
     }
 
@@ -117,21 +151,43 @@ public abstract class SizedTool extends Tool {
     public void onDeactivated() {
         // If the tool is switched mid-stroke, clean up the preview.
         clearPreview();
-        strokePoints.clear();
+        clearStrokePoints();
+    }
+
+    private void addStrokePoint(double x, double y) {
+        // Skip points closer than 1.5 px to the last recorded point.
+        // The preview is already drawn accurately via lastX/lastY; the replay path
+        // benefits from fewer points without any visible quality loss.
+        if (strokePointCount > 0) {
+            double dx = x - strokeXs[strokePointCount - 1];
+            double dy = y - strokeYs[strokePointCount - 1];
+            if (dx * dx + dy * dy < MIN_STROKE_DIST_SQ) return;
+        }
+        if (strokePointCount >= strokeXs.length) {
+            int newSize = strokeXs.length * 2;
+            strokeXs = java.util.Arrays.copyOf(strokeXs, newSize);
+            strokeYs = java.util.Arrays.copyOf(strokeYs, newSize);
+        }
+        strokeXs[strokePointCount] = x;
+        strokeYs[strokePointCount] = y;
+        strokePointCount++;
+    }
+
+    private void clearStrokePoints() {
+        strokePointCount = 0;
     }
 
     // Clears the preview canvas.
     private void clearPreview() {
-        if (previewCanvas != null) {
-            previewCanvas.getGraphicsContext2D()
-                    .clearRect(0, 0, previewCanvas.getWidth(), previewCanvas.getHeight());
+        if (previewGc != null) {
+            previewGc.clearRect(0, 0, previewCanvas.getWidth(), previewCanvas.getHeight());
         }
     }
 
     // Applies the stroke style to the given GraphicsContext.
     private void configureStroke(GraphicsContext target) {
         target.setStroke(strokeColor());
-        target.setLineWidth(size);
+        target.setLineWidth(getSize());
         target.setLineCap(StrokeLineCap.ROUND);
         target.setLineJoin(StrokeLineJoin.ROUND);
     }

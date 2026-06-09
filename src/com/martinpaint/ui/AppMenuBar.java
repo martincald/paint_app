@@ -17,11 +17,8 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 
+/** System menu bar: File, Edit, View, Select, and Help menus. */
 public class AppMenuBar extends MenuBar {
-
-    public AppMenuBar(AppController controller, Stage stage) {
-        this(controller, stage, null);
-    }
 
     public AppMenuBar(AppController controller, Stage stage, CanvasViewport viewport) {
         // Use the macOS system menu bar
@@ -33,17 +30,15 @@ public class AppMenuBar extends MenuBar {
 
         // File menu
         Menu fileMenu = new Menu("File");
-        MenuItem newCanvas = item("Clear all", null, _ -> {
-            canvasManager.saveStateForUndo();
-            canvasManager.clear();
-        });
+        MenuItem clearLayerItem = ClearAction.LAYER.menuItem(stage, canvasManager);
+        MenuItem clearAllItem = ClearAction.ALL.menuItem(stage, canvasManager);
         MenuItem importItem = item("Import PNG…", null, _ -> fileManager.importPNG(stage, canvasManager));
         MenuItem exportItem = item("Export PNG…", null, _ -> fileManager.exportPNG(stage, canvasManager));
 
         MenuItem undoItem = item("Undo", new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN), _ -> canvasManager.undo());
         MenuItem redoItem = item("Redo", new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN), _ -> canvasManager.redo());
 
-        fileMenu.getItems().addAll(newCanvas, new SeparatorMenuItem(),
+        fileMenu.getItems().addAll(clearLayerItem, clearAllItem, new SeparatorMenuItem(),
                 importItem, exportItem,
                 new SeparatorMenuItem(), undoItem, redoItem);
 
@@ -92,7 +87,7 @@ public class AppMenuBar extends MenuBar {
         MenuItem aboutItem = item("About Paint App", null, _ -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("About Paint App");
-            alert.setHeaderText("Paint App  v1.3");
+            alert.setHeaderText("Paint App  v1.4");
             alert.setContentText("A dark-theme paint application built with JavaFX.");
             alert.showAndWait();
         });

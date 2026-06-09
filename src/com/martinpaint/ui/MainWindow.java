@@ -1,16 +1,13 @@
 package com.martinpaint.ui;
 
 import com.martinpaint.app.AppController;
-import com.martinpaint.canvas.CanvasManager;
 import com.martinpaint.color.ColorManager;
-import com.martinpaint.selection.ClipboardService;
 import com.martinpaint.selection.SelectionController;
 import com.martinpaint.selection.SelectionOverlay;
-import com.martinpaint.tools.HandTool;
 import com.martinpaint.tools.SelectionTool;
+import com.martinpaint.tools.Tool;
 import com.martinpaint.tools.ToolManager;
-import com.martinpaint.tools.ZoomTool;
-import javafx.embed.swing.SwingFXUtils;
+import com.martinpaint.tools.ToolSpec;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -22,11 +19,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.awt.Taskbar;
 import java.io.InputStream;
-import java.util.Map;
 
-// Main window of the application.
+/** Main window of the application. */
 public class MainWindow {
 
     private final AppController controller;
@@ -35,18 +30,6 @@ public class MainWindow {
 
     private CanvasViewport viewport;
     private SelectionController selectionController;
-
-    // Tool keyboard shortcut map: letter → tool name
-    private static final Map<KeyCode, String> TOOL_SHORTCUTS = Map.of(
-        KeyCode.B, "Brush",
-        KeyCode.N, "Pencil",
-        KeyCode.E, "Eraser",
-        KeyCode.G, "Bucket Fill",
-        KeyCode.I, "Eyedropper",
-        KeyCode.M, "Selection",
-        KeyCode.H, "Hand",
-        KeyCode.Z, "Zoom"
-    );
 
     public MainWindow(AppController controller) {
         this.controller = controller;
@@ -65,21 +48,14 @@ public class MainWindow {
         SelectionOverlay overlay = new SelectionOverlay();
         viewport.addCanvasOverlay(overlay);
 
-        selectionController = new SelectionController(
-                controller.getCanvasManager(), overlay, new ClipboardService(),
-                viewport::getScaleValue);
+        selectionController = new SelectionController(controller.getCanvasManager(), overlay);
+        selectionController.attachOverlayInteraction();
         selectionTool.setController(selectionController);
         viewport.setSelectionKeyHandler(this::handleSelectionKey);
 
         // Wire Hand/Zoom tools to viewport navigation mode.
         toolManager.activeToolProperty().addListener((_, _, tool) -> {
-            if (tool instanceof HandTool) {
-                viewport.setNavMode(CanvasViewport.NavMode.PAN);
-            } else if (tool instanceof ZoomTool) {
-                viewport.setNavMode(CanvasViewport.NavMode.ZOOM);
-            } else {
-                viewport.setNavMode(CanvasViewport.NavMode.NONE);
-            }
+            viewport.setNavMode(toViewportNavMode(tool));
         });
 
         ToolPanel      toolRail     = new ToolPanel(toolManager, colorManager);
@@ -133,7 +109,8 @@ public class MainWindow {
     public void show() {
         Scene scene = new Scene(root, 1400, 900);
         scene.setFill(Color.web("#1c1c1c"));
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        var css = getClass().getResource("styles.css");
+        if (css != null) scene.getStylesheets().add(css.toExternalForm());
 
         stage.setTitle("Paint App — Untitled-1");
         loadAppIcon();
@@ -154,9 +131,9 @@ public class MainWindow {
             KeyCode code = event.getCode();
 
             // Tool activation
-            String toolName = TOOL_SHORTCUTS.get(code);
-            if (toolName != null) {
-                toolManager.setActiveTool(toolName);
+            ToolSpec toolSpec = ToolSpec.fromShortcut(code);
+            if (toolSpec != null) {
+                toolManager.setActiveTool(toolSpec);
                 event.consume();
                 return;
             }
@@ -170,19 +147,25 @@ public class MainWindow {
         stage.show();
     }
 
+    private CanvasViewport.NavMode toViewportNavMode(Tool tool) {
+        if (tool == null) return CanvasViewport.NavMode.NONE;
+        return switch (tool.getSpec().navigationMode()) {
+            case PAN -> CanvasViewport.NavMode.PAN;
+            case ZOOM -> CanvasViewport.NavMode.ZOOM;
+            case NONE -> CanvasViewport.NavMode.NONE;
+        };
+    }
+
     private void loadAppIcon() {
-        InputStream iconStream = getClass().getResourceAsStream("/resources/images/app_icon.png");
-        if (iconStream == null) {
-            System.err.println("[Warning] app_icon.png not found in classpath resources.");
-            return;
-        }
-        Image appIcon = new Image(iconStream);
-        stage.getIcons().add(appIcon);
-        if (Taskbar.isTaskbarSupported()) {
-            Taskbar taskbar = Taskbar.getTaskbar();
-            if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
-                taskbar.setIconImage(SwingFXUtils.fromFXImage(appIcon, null));
+        try (InputStream iconStream = getClass().getResourceAsStream("/resources/images/app_icon.png")) {
+            if (iconStream == null) {
+                System.err.println("[Warning] app_icon.png not found in classpath resources.");
+                return;
             }
+            Image appIcon = new Image(iconStream);
+            stage.getIcons().add(appIcon);
+        } catch (Exception e) {
+            System.err.println("[Warning] failed to load app icon: " + e.getMessage());
         }
     }
 }

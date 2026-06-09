@@ -4,7 +4,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 
 // Resize handles for corners.
-public enum ResizeHandle {
+enum ResizeHandle {
 
     NW(Cursor.NW_RESIZE, 0, 0, 1, 1),
     NE(Cursor.NE_RESIZE, 1, 0, 0, 1),

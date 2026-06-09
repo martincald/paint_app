@@ -1,15 +1,17 @@
 package com.martinpaint.tools;
 
-import com.martinpaint.io.ImageLoader;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-// Standard paint brush
+/** Standard paint brush */
 public class BrushTool extends SizedTool implements OpacityAware {
 
-    private double opacity = 1.0;
+    private static final double DEFAULT_OPACITY = 1.0;
 
-    public BrushTool() { super(5.0); }
+    private double opacity = DEFAULT_OPACITY;
+
+    public BrushTool() {
+        super(ToolSpec.BRUSH);
+    }
 
     // Tell SizedTool to use the preview canvas and replay the stroke at opacity on release.
     @Override
@@ -17,7 +19,7 @@ public class BrushTool extends SizedTool implements OpacityAware {
 
     // Provides the current opacity to SizedTool when flattening the buffer
     @Override
-    protected double currentOpacity() { return opacity; }
+    protected double currentOpacity() { return getOpacity(); }
 
     @Override
     public double getOpacity() { return opacity; }
@@ -25,19 +27,21 @@ public class BrushTool extends SizedTool implements OpacityAware {
     @Override
     public void setOpacity(double opacity) {
         // Clamp to 1%–100% so the brush is never invisible
-        this.opacity = Math.max(0.01, Math.min(1.0, opacity));
+        double clamped = Math.clamp(opacity, 0.01, 1.0);
+        if (Double.compare(this.opacity, clamped) != 0) {
+            this.opacity = clamped;
+            markSettingsChanged();
+        }
+    }
+
+    @Override
+    public void resetSettings() {
+        super.resetSettings();
+        setOpacity(DEFAULT_OPACITY);
     }
 
     @Override
     protected Color strokeColor() {
         return colorManager.getCurrentColor();
-    }
-
-    @Override
-    public String getName() { return "Brush"; }
-
-    @Override
-    public Image getIcon() {
-        return ImageLoader.load("resources/images/paint-brush.png");
     }
 }

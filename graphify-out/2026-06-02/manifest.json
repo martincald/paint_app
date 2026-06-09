@@ -1,0 +1,382 @@
+{
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/update_icon.sh": {
+    "mtime": 1778765865.0,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.junie/memory/language.json": {
+    "mtime": 1778764335.0,
+    "ast_hash": "d751713988987e9331980363e24189ce",
+    "semantic_hash": "d751713988987e9331980363e24189ce"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/native/HapticFeedback.m": {
+    "mtime": 1777395665.3381097,
+    "ast_hash": "9f18ed4e2a108da2abf0b5b946aa50da",
+    "semantic_hash": "9f18ed4e2a108da2abf0b5b946aa50da"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.claude/settings.json": {
+    "mtime": 1780406448.0399873,
+    "ast_hash": "7dea57a8eaa7d97bf5913d719b99a8fe",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.claude/settings.local.json": {
+    "mtime": 1779926186.652228,
+    "ast_hash": "0e6feb1c2755edeb6764e6bd1d425aca",
+    "semantic_hash": "0e6feb1c2755edeb6764e6bd1d425aca"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/Main.java": {
+    "mtime": 1779806134.5815194,
+    "ast_hash": "cbf90f71e28a44f81fa0a8be7564f165",
+    "semantic_hash": "cbf90f71e28a44f81fa0a8be7564f165"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/ColorHistoryPanel.java": {
+    "mtime": 1779894486.636692,
+    "ast_hash": "e78288765d4f1149818d3bbdb5867f4f",
+    "semantic_hash": "e78288765d4f1149818d3bbdb5867f4f"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/ToolSettingsContainer.java": {
+    "mtime": 1779887849.0050697,
+    "ast_hash": "000ff2cf6c24a32e5fc323a57c199def",
+    "semantic_hash": "000ff2cf6c24a32e5fc323a57c199def"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/CanvasTabBar.java": {
+    "mtime": 1779729591.7699385,
+    "ast_hash": "d9f1b4ff13143ebf0ab6bf9a3a412514",
+    "semantic_hash": "d9f1b4ff13143ebf0ab6bf9a3a412514"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/HsvPickerSquare.java": {
+    "mtime": 1779821044.669659,
+    "ast_hash": "a5c059d768d1f9f42bdeccf10e02180e",
+    "semantic_hash": "a5c059d768d1f9f42bdeccf10e02180e"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/HueStrip.java": {
+    "mtime": 1779821056.682372,
+    "ast_hash": "6cfa44746f24c20161efb617f9624802",
+    "semantic_hash": "6cfa44746f24c20161efb617f9624802"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/OptionsBar.java": {
+    "mtime": 1779887856.3991747,
+    "ast_hash": "72c4cf23d8236e43d3589088b679b1d4",
+    "semantic_hash": "72c4cf23d8236e43d3589088b679b1d4"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/RgbSlidersView.java": {
+    "mtime": 1779893802.2980795,
+    "ast_hash": "740f2209992fd6343ba1e14ce3315201",
+    "semantic_hash": "740f2209992fd6343ba1e14ce3315201"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/ToolSettingsView.java": {
+    "mtime": 1779931773.1042063,
+    "ast_hash": "099a54a78c1f26c4e75ebaa270a1cab7",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/StatusBar.java": {
+    "mtime": 1779888565.586258,
+    "ast_hash": "00b82eb4131179c8f5a25dc3f37b7d12",
+    "semantic_hash": "00b82eb4131179c8f5a25dc3f37b7d12"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/ToolIcons.java": {
+    "mtime": 1779931687.3660672,
+    "ast_hash": "df33f8b0b2b177484ad87ee811db3098",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/ColorPickerPanel.java": {
+    "mtime": 1779931773.1023443,
+    "ast_hash": "dcf5945fb15e502dbe537df18037ce54",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/CanvasViewport.java": {
+    "mtime": 1780408279.7213657,
+    "ast_hash": "a62640ecf7f59a4e32a61846cb3f0403",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/Panels.java": {
+    "mtime": 1779931773.1003795,
+    "ast_hash": "909e63ec58dfbd792653c733ab2a55fd",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/MainWindow.java": {
+    "mtime": 1779931687.3616524,
+    "ast_hash": "d2362cf292bd233be0aea1ba2f13032a",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/SidePanel.java": {
+    "mtime": 1780408289.7816188,
+    "ast_hash": "87b9cef6b8876cd93caa0ad0ef53588f",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/ToolPanel.java": {
+    "mtime": 1779931773.101275,
+    "ast_hash": "0a24840e7c4ab0499e2288dae1ac07af",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/AppMenuBar.java": {
+    "mtime": 1779931687.3628895,
+    "ast_hash": "81b39875056b65c318650c376362ced3",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/PencilTool.java": {
+    "mtime": 1779894361.1128063,
+    "ast_hash": "b28beec30555c1509767e6b5fe2a6b99",
+    "semantic_hash": "b28beec30555c1509767e6b5fe2a6b99"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/ToolManager.java": {
+    "mtime": 1780408187.1304436,
+    "ast_hash": "4efc98b469e45f3a7613036256a67827",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/PassiveTool.java": {
+    "mtime": 1779894303.0598893,
+    "ast_hash": "ba702639112350bec9575b32100c355d",
+    "semantic_hash": "ba702639112350bec9575b32100c355d"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/EraserTool.java": {
+    "mtime": 1779932407.0416892,
+    "ast_hash": "bc241cef273b8f1f5139b585dd178cc5",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/EyeDropperTool.java": {
+    "mtime": 1780408196.2706792,
+    "ast_hash": "18e3eec5e2d606725601c5fd407330a1",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/SelectionTool.java": {
+    "mtime": 1779887735.8704891,
+    "ast_hash": "c6a1652e9d79e4335a838d3c7e894ff7",
+    "semantic_hash": "c6a1652e9d79e4335a838d3c7e894ff7"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/FillTool.java": {
+    "mtime": 1779894417.1045876,
+    "ast_hash": "4117ca00bec8de59aad0278881e6b660",
+    "semantic_hash": "4117ca00bec8de59aad0278881e6b660"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/BrushTool.java": {
+    "mtime": 1779894361.111839,
+    "ast_hash": "d8fd926443ee6928b0eaa5452152f4bb",
+    "semantic_hash": "d8fd926443ee6928b0eaa5452152f4bb"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/Tool.java": {
+    "mtime": 1779894361.1095593,
+    "ast_hash": "1720a52f0bb89166ee5560a8fdce644a",
+    "semantic_hash": "1720a52f0bb89166ee5560a8fdce644a"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/ToolSpec.java": {
+    "mtime": 1779894303.0585217,
+    "ast_hash": "b6f90bf9beb7ebf62baf78bc0f464d3e",
+    "semantic_hash": "b6f90bf9beb7ebf62baf78bc0f464d3e"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/SizedTool.java": {
+    "mtime": 1780272188.590358,
+    "ast_hash": "ffb4207819b367095da259e52d254fcc",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/tools/OpacityAware.java": {
+    "mtime": 1778851805.5859368,
+    "ast_hash": "d3dd394f9995b47d9cdf3a3cc375e086",
+    "semantic_hash": "d3dd394f9995b47d9cdf3a3cc375e086"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/app/AppController.java": {
+    "mtime": 1778687294.2859528,
+    "ast_hash": "e999b84b48f41194e96d5b607c3033f1",
+    "semantic_hash": "e999b84b48f41194e96d5b607c3033f1"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/app/HapticFeedback.java": {
+    "mtime": 1778687548.7795143,
+    "ast_hash": "f64c29c7458f487a5aa325373c07a5be",
+    "semantic_hash": "f64c29c7458f487a5aa325373c07a5be"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/color/ColorUtils.java": {
+    "mtime": 1777994855.7206814,
+    "ast_hash": "b859510383a6016c52ca3ca75d6a0828",
+    "semantic_hash": "b859510383a6016c52ca3ca75d6a0828"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/color/ColorHistory.java": {
+    "mtime": 1779894486.6338737,
+    "ast_hash": "b3247d65f367e2b21d5411cfbe715963",
+    "semantic_hash": "b3247d65f367e2b21d5411cfbe715963"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/color/ColorManager.java": {
+    "mtime": 1779801963.78817,
+    "ast_hash": "c0704f41ad0c28e8013bc944c6037a50",
+    "semantic_hash": "c0704f41ad0c28e8013bc944c6037a50"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/io/FileManager.java": {
+    "mtime": 1779894361.1142638,
+    "ast_hash": "1e1bea6ce1e9377a8659ee89b46d5bc2",
+    "semantic_hash": "1e1bea6ce1e9377a8659ee89b46d5bc2"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/canvas/CanvasManager.java": {
+    "mtime": 1780412317.5862808,
+    "ast_hash": "c9eedaccf787773d4ff06d833b4c0521",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/selection/SelectionInteractionMode.java": {
+    "mtime": 1779931687.3581061,
+    "ast_hash": "3c03ca2b36e2c2cbff9dd6f48ade8cf7",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/selection/SelectionOrigin.java": {
+    "mtime": 1779931687.357116,
+    "ast_hash": "b0f7cb64df83029b366bbab545431e98",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/selection/Selection.java": {
+    "mtime": 1780412390.148823,
+    "ast_hash": "354430061ff18a4c0b016ba1f48a76cb",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/selection/ClipboardService.java": {
+    "mtime": 1779931687.3596377,
+    "ast_hash": "04e9928e5e65b9a4f1e79126d6a66ba0",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/selection/ResizeHandle.java": {
+    "mtime": 1779931687.358822,
+    "ast_hash": "5a256099627681c676b7c5614c97b5da",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/selection/SelectionOverlay.java": {
+    "mtime": 1779887980.1745753,
+    "ast_hash": "15b68de309fb7ac8f0794f66e80bc97e",
+    "semantic_hash": "15b68de309fb7ac8f0794f66e80bc97e"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/selection/SelectionController.java": {
+    "mtime": 1780412431.6172504,
+    "ast_hash": "2e713a225524510c4a754bdf039d484c",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/sources.txt": {
+    "mtime": 1780408441.4117877,
+    "ast_hash": "11e207f64f2a9e4e7a6b4608e759175b",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/README.md": {
+    "mtime": 1778687587.6536956,
+    "ast_hash": "c62294ddbaa939d69067229f44601458",
+    "semantic_hash": "c62294ddbaa939d69067229f44601458"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.junie/memory/errors.md": {
+    "mtime": 1778764332.0,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.junie/memory/tasks.md": {
+    "mtime": 1778764332.0,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.junie/memory/feedback.md": {
+    "mtime": 1778764333.0,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.claude/agents/java-architect.md": {
+    "mtime": 1779802248.2064536,
+    "ast_hash": "e70802676f0dd3a3d6d6fbd16f7d42c4",
+    "semantic_hash": "e70802676f0dd3a3d6d6fbd16f7d42c4"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.claude/agents/paint-orchestrator.md": {
+    "mtime": 1779928260.5422208,
+    "ast_hash": "ea583baa26c909f13dfe77efd6223ac9",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.claude/agents/performance-engineer.md": {
+    "mtime": 1779802248.0,
+    "ast_hash": "0d8912ad4bf434eb2a19ee1abfaa719e",
+    "semantic_hash": "0d8912ad4bf434eb2a19ee1abfaa719e"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.claude/agents/debugger.md": {
+    "mtime": 1779802248.2212908,
+    "ast_hash": "49001ec8807dbc165eb1e2c1f76bbc9e",
+    "semantic_hash": "49001ec8807dbc165eb1e2c1f76bbc9e"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.claude/agents/cpp-pro.md": {
+    "mtime": 1779802255.8184144,
+    "ast_hash": "dfea0a0b8de029d507c1777e7c3b2a7a",
+    "semantic_hash": "dfea0a0b8de029d507c1777e7c3b2a7a"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.claude/agents/refactoring-specialist.md": {
+    "mtime": 1779802248.2173715,
+    "ast_hash": "b0b4e96c28655378d857094cfc8404f4",
+    "semantic_hash": "b0b4e96c28655378d857094cfc8404f4"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/resources/images/hand.svg": {
+    "mtime": 1779819132.4709518,
+    "ast_hash": "5c40ff1c48a83beb6b4bdbed104d5648",
+    "semantic_hash": "5c40ff1c48a83beb6b4bdbed104d5648"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/resources/images/eraser.svg": {
+    "mtime": 1779819106.8441768,
+    "ast_hash": "fb40374b54e1b16044bb699bcab840d2",
+    "semantic_hash": "fb40374b54e1b16044bb699bcab840d2"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/resources/images/app_icon.png": {
+    "mtime": 1778766453.370916,
+    "ast_hash": "d81db97310018890c395982d190dff31",
+    "semantic_hash": "d81db97310018890c395982d190dff31"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/resources/images/brush.svg": {
+    "mtime": 1779819091.8150334,
+    "ast_hash": "485ee91a1eed27446f4a8707da717b72",
+    "semantic_hash": "485ee91a1eed27446f4a8707da717b72"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/resources/images/zoom.svg": {
+    "mtime": 1779819166.6043794,
+    "ast_hash": "8bc0f0917ec2803f55a26ef9a2f10d1b",
+    "semantic_hash": "8bc0f0917ec2803f55a26ef9a2f10d1b"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/resources/images/selection.svg": {
+    "mtime": 1779819126.4609947,
+    "ast_hash": "40fe8b2ce294c1f4f7efc4e5796b9915",
+    "semantic_hash": "40fe8b2ce294c1f4f7efc4e5796b9915"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/resources/images/eyedropper.svg": {
+    "mtime": 1779819117.3871033,
+    "ast_hash": "099256649aeb31378a0a6307bb4e0f4f",
+    "semantic_hash": "099256649aeb31378a0a6307bb4e0f4f"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/resources/images/bucket.svg": {
+    "mtime": 1779819112.0837293,
+    "ast_hash": "915ee62b10606fce82dd0cc42ea493dc",
+    "semantic_hash": "915ee62b10606fce82dd0cc42ea493dc"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/resources/images/pencil.svg": {
+    "mtime": 1779819101.4455783,
+    "ast_hash": "fefce0e931a38e4d9c9feab0c46ece58",
+    "semantic_hash": "fefce0e931a38e4d9c9feab0c46ece58"
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/canvas/LayerState.java": {
+    "mtime": 1780407763.6493666,
+    "ast_hash": "870fa7c7d59001355e3d5fb9ba0e2970",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/canvas/CanvasSnapshot.java": {
+    "mtime": 1780407766.7135103,
+    "ast_hash": "d6d1ecf84bc76a026c7424d17e6ac9c7",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/canvas/LayerManager.java": {
+    "mtime": 1780412321.9096832,
+    "ast_hash": "ebcea5dfae6584745d01cb72b7df4a5d",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/canvas/Layer.java": {
+    "mtime": 1780407776.5090582,
+    "ast_hash": "b8cbe48f6c2b0998ab3992ebc8e29135",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/CLAUDE.md": {
+    "mtime": 1779930954.4941583,
+    "ast_hash": "82efb97a359f5c7290bf2513d14686be",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/.claude/agents/ui-designer.md": {
+    "mtime": 1779928268.2425587,
+    "ast_hash": "4d2c1a6dfeb944ab55bbf60916c1ef8c",
+    "semantic_hash": ""
+  },
+  "/Users/martin_calderon/Library/CloudStorage/OneDrive-NordAngliaEducation-TheAmericas/NAE - Files/Desktop/Java Projects/Paint App/src/com/martinpaint/ui/LayerPanel.java": {
+    "mtime": 1780425140.6274588,
+    "ast_hash": "1337ceb6e5522c48c2eabcd85687d29f",
+    "semantic_hash": ""
+  }
+}

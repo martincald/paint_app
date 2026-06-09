@@ -13,9 +13,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+/** Handles PNG import and export via a JavaFX file chooser. */
 public class FileManager {
-
-    // File manager class.
 
     public void exportPNG(Stage stage, CanvasManager canvasManager) {
         File file = chooseFile(stage, "Export PNG", "painting.png", true);
@@ -36,9 +35,14 @@ public class FileManager {
 
         try {
             Image image = new Image(file.toURI().toString());
-            Canvas canvas = canvasManager.getCanvas();
+            if (image.isError()) {
+                throw new IllegalArgumentException("Unable to load image.");
+            }
+            Canvas canvas = canvasManager.getActiveLayerCanvas();
             GraphicsContext gc = canvasManager.getGraphicsContext();
+            canvasManager.saveStateForUndo();
             gc.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight());
+            canvasManager.markDrawingChanged();
         } catch (Exception e) {
             System.err.println("Failed to import PNG: " + e.getMessage());
         }

@@ -6,7 +6,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-// Right-side panel column: Color picker, Swatches, and Properties panels.
+/** Right-side panel column: Color picker, Swatches, and Properties panels. */
 public class SidePanel extends VBox {
 
     public SidePanel(AppController controller) {
@@ -16,12 +16,12 @@ public class SidePanel extends VBox {
         ColorHistoryPanel  swatchesPanel    = new ColorHistoryPanel(controller.getColorManager());
         ToolSettingsContainer settingsPanel = new ToolSettingsContainer(controller.getToolManager());
 
+        LayerPanel layerPanel = new LayerPanel(controller.getCanvasManager());
+
         Region filler = new Region();
-        filler.getStyleClass().add("panel-column");
         VBox.setVgrow(filler, Priority.ALWAYS);
 
-        VBox content = new VBox(colorPickerPanel, swatchesPanel, settingsPanel, filler);
-        content.getStyleClass().add("panel-column");
+        VBox content = new VBox(colorPickerPanel, swatchesPanel, settingsPanel, layerPanel, filler);
 
         ScrollPane scroll = new ScrollPane(content);
         scroll.getStyleClass().add("side-panel-scroll");

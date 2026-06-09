@@ -1,7 +1,6 @@
 package com.martinpaint.ui;
 
 import com.martinpaint.color.ColorManager;
-import com.martinpaint.color.ColorUtils;
 import com.martinpaint.tools.Tool;
 import com.martinpaint.tools.ToolManager;
 import javafx.geometry.Insets;
@@ -11,8 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -24,26 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// Narrow single-column tool rail on the left edge of the window.
+/** Narrow single-column tool rail on the left edge of the window. */
 public class ToolPanel extends VBox {
 
     private static final double ICON_SIZE = 18;
-
-    // Keyboard shortcut for each tool (by getName())
-    private static final Map<String, String> TOOL_KEYS = Map.of(
-        "Brush",       "B",
-        "Pencil",      "N",
-        "Eraser",      "E",
-        "Bucket Fill", "G",
-        "Eyedropper",  "I",
-        "Selection",   "M",
-        "Hand",        "H",
-        "Zoom",        "Z"
-    );
-
-    // Separator before these tool indices (0-based)
-    // Tool order: Brush(0) Pencil(1) Eraser(2) Fill(3) Eyedropper(4) Selection(5) Hand(6) Zoom(7)
-    private static final java.util.Set<Integer> SEP_BEFORE = java.util.Set.of(2, 3, 5, 6);
 
     public ToolPanel(ToolManager toolManager, ColorManager colorManager) {
         getStyleClass().add("tool-rail");
@@ -56,9 +37,9 @@ public class ToolPanel extends VBox {
         Map<Tool, ToggleButton> toolButtons = new HashMap<>();
 
         for (int i = 0; i < tools.size(); i++) {
-            if (SEP_BEFORE.contains(i)) getChildren().add(separator());
-
             Tool tool = tools.get(i);
+            if (tool.getSpec().separatorBefore()) getChildren().add(separator());
+
             ToggleButton btn = createToolButton(tool, toolManager, group);
             toolButtons.put(tool, btn);
             if (tool == toolManager.getActiveTool()) btn.setSelected(true);
@@ -89,51 +70,33 @@ public class ToolPanel extends VBox {
         btn.setToggleGroup(group);
         btn.getStyleClass().add("tool-btn");
 
-        // Prefer vector SVG icon, fall back to raster PNG, then first letter.
-        Node svgIcon = ToolIcons.iconFor(tool.getName());
+        Node svgIcon = ToolIcons.iconFor(tool.getSpec());
         if (svgIcon != null) {
             svgIcon.setOpacity(0.75);
-            Node graphic = withKeyHint(svgIcon, tool.getName());
+            Node graphic = withKeyHint(svgIcon, tool);
             btn.setGraphic(graphic);
             btn.selectedProperty().addListener((_, _, sel) -> svgIcon.setOpacity(sel ? 1.0 : 0.75));
             btn.hoverProperty().addListener((_, _, hover) -> {
                 if (!btn.isSelected()) svgIcon.setOpacity(hover ? 1.0 : 0.75);
             });
         } else {
-            Image icon = tool.getIcon();
-            if (icon != null) {
-                ImageView iv = new ImageView(icon);
-                iv.setFitWidth(ICON_SIZE);
-                iv.setFitHeight(ICON_SIZE);
-                iv.setPreserveRatio(true);
-                iv.setSmooth(true);
-                iv.setOpacity(0.75);
-                Node graphic = withKeyHint(iv, tool.getName());
-                btn.setGraphic(graphic);
-                btn.selectedProperty().addListener((_, _, sel) -> iv.setOpacity(sel ? 1.0 : 0.75));
-                btn.hoverProperty().addListener((_, _, hover) -> {
-                    if (!btn.isSelected()) iv.setOpacity(hover ? 1.0 : 0.75);
-                });
-            } else {
-                btn.setText(tool.getName().substring(0, 1).toUpperCase());
-            }
+            btn.setText(tool.getName().substring(0, 1).toUpperCase());
         }
 
         Tooltip tip = new Tooltip(tool.getName());
-        tip.setStyle("-fx-background-color: #000; -fx-text-fill: #e6e6e6; -fx-font-size: 11px;");
         btn.setTooltip(tip);
 
         btn.setOnAction(_ -> {
             if (mgr.getActiveTool() == tool) mgr.clearActiveTool();
-            else mgr.setActiveTool(tool.getName());
+            else mgr.setActiveTool(tool.getSpec());
         });
 
         return btn;
     }
 
     // Wraps an icon node in a StackPane with a small keyboard-shortcut hint label.
-    private Node withKeyHint(Node iconNode, String toolName) {
-        String key = TOOL_KEYS.get(toolName);
+    private Node withKeyHint(Node iconNode, Tool tool) {
+        String key = tool.getSpec().shortcut().getName();
         if (key == null) return iconNode;
 
         Label hint = new Label(key);
@@ -148,43 +111,31 @@ public class ToolPanel extends VBox {
 
     // FG/BG overlapping chips + swap/reset at the bottom of the rail.
     private Pane buildRailColorChips(ColorManager colorManager) {
-        Region bgChip = new Region();
-        bgChip.getStyleClass().add("rail-color-chip");
-        bgChip.setPrefSize(22, 22);
-        bgChip.setMinSize(22, 22);
-        bgChip.setMaxSize(22, 22);
+        Region bgChip = Panels.colorChip("rail-color-chip", 22);
         bgChip.setLayoutX(14);
         bgChip.setLayoutY(14);
 
-        Region fgChip = new Region();
-        fgChip.getStyleClass().add("rail-color-chip");
-        fgChip.setPrefSize(22, 22);
-        fgChip.setMinSize(22, 22);
-        fgChip.setMaxSize(22, 22);
+        Region fgChip = Panels.colorChip("rail-color-chip", 22);
         fgChip.setLayoutX(0);
         fgChip.setLayoutY(0);
 
         Runnable refresh = () -> {
             Color fg = colorManager.getCurrentColor();
             Color bg = colorManager.getBackgroundColor();
-            if (fg != null) fgChip.setStyle("-fx-background-color: " + ColorUtils.toWebHex(fg) +
-                "; -fx-background-radius: 2; -fx-border-color: #555; -fx-border-width: 0.5; -fx-border-radius: 2;");
-            if (bg != null) bgChip.setStyle("-fx-background-color: " + ColorUtils.toWebHex(bg) +
-                "; -fx-background-radius: 2; -fx-border-color: #555; -fx-border-width: 0.5; -fx-border-radius: 2;");
+            if (fg != null) Panels.setColorFill(fgChip, fg);
+            if (bg != null) Panels.setColorFill(bgChip, bg);
         };
         refresh.run();
         colorManager.currentColorProperty().addListener((_, _, _) -> refresh.run());
         colorManager.backgroundColorProperty().addListener((_, _, _) -> refresh.run());
 
         // Swap & reset labels
-        Label swapLbl = new Label("⇄");
-        swapLbl.setStyle("-fx-text-fill: #8a8a8a; -fx-font-size: 9px; -fx-cursor: hand;");
+        Label swapLbl = Panels.actionLabel("⇄", "rail-chip-action");
         swapLbl.setLayoutX(28);
         swapLbl.setLayoutY(-2);
         swapLbl.setOnMouseClicked(_ -> colorManager.swapColors());
 
-        Label resetLbl = new Label("↺");
-        resetLbl.setStyle("-fx-text-fill: #8a8a8a; -fx-font-size: 9px; -fx-cursor: hand;");
+        Label resetLbl = Panels.actionLabel("↺", "rail-chip-action");
         resetLbl.setLayoutX(-2);
         resetLbl.setLayoutY(28);
         resetLbl.setOnMouseClicked(_ -> colorManager.resetColors());

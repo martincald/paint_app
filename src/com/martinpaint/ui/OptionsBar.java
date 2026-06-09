@@ -5,6 +5,7 @@ import com.martinpaint.tools.OpacityAware;
 import com.martinpaint.tools.SizedTool;
 import com.martinpaint.tools.Tool;
 import com.martinpaint.tools.ToolManager;
+import javafx.beans.InvalidationListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -15,14 +16,31 @@ import javafx.scene.layout.Region;
 // Shows the active tool name and its key settings at a glance.
 public class OptionsBar extends HBox {
 
+    private final ToolManager toolManager;
+    private final InvalidationListener settingsListener;
+    private Tool observedTool;
+
     public OptionsBar(ToolManager toolManager) {
+        this.toolManager = toolManager;
+        this.settingsListener = _ -> rebuild(this.toolManager.getActiveTool());
         getStyleClass().add("options-bar");
         setAlignment(Pos.CENTER_LEFT);
         setSpacing(0);
         setPadding(new Insets(0, 12, 0, 12));
 
-        rebuild(toolManager.getActiveTool());
-        toolManager.activeToolProperty().addListener((_, _, tool) -> rebuild(tool));
+        observeTool(toolManager.getActiveTool());
+        toolManager.activeToolProperty().addListener((_, _, tool) -> observeTool(tool));
+    }
+
+    private void observeTool(Tool tool) {
+        if (observedTool != null) {
+            observedTool.settingsVersionProperty().removeListener(settingsListener);
+        }
+        observedTool = tool;
+        if (observedTool != null) {
+            observedTool.settingsVersionProperty().addListener(settingsListener);
+        }
+        rebuild(tool);
     }
 
     private void rebuild(Tool tool) {

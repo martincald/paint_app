@@ -18,8 +18,13 @@ public class SelectionOverlay extends Pane {
 
     // Callbacks set by SelectionController
     private Consumer<ResizeHandle> onResizeStart;
-    private Consumer<double[]>     onResizeDrag;   // double[]{x, y}
+    private ResizeDragHandler      onResizeDrag;
     private Runnable               onResizeEnd;
+
+    @FunctionalInterface
+    public interface ResizeDragHandler {
+        void handle(double x, double y);
+    }
 
     public SelectionOverlay() {
         this(CanvasManager.CANVAS_SIZE, CanvasManager.CANVAS_SIZE);
@@ -91,6 +96,10 @@ public class SelectionOverlay extends Pane {
     // Hides the overlay
     public void hide() {
         setVisible(false);
+        floatView.setImage(null);
+        floatView.setVisible(false);
+        updateMarquee(0, 0, 0, 0);
+        setHandlesVisible(false);
     }
 
 // Interaction wiring
@@ -99,7 +108,7 @@ public class SelectionOverlay extends Pane {
     //Move detection is handled entirely in SelectionController via onCanvasPressed/Dragged.
     public void wireInteraction(
             Consumer<ResizeHandle> onResizeStart,
-            Consumer<double[]>     onResizeDrag,
+            ResizeDragHandler      onResizeDrag,
             Runnable               onResizeEnd
     ) {
         this.onResizeStart = onResizeStart;
@@ -123,7 +132,7 @@ public class SelectionOverlay extends Pane {
         handle.setOnMouseDragged(e -> {
             e.consume();
             javafx.geometry.Point2D p = handle.localToParent(e.getX(), e.getY());
-            if (onResizeDrag != null) onResizeDrag.accept(new double[]{p.getX(), p.getY()});
+            if (onResizeDrag != null) onResizeDrag.handle(p.getX(), p.getY());
         });
 
         handle.setOnMouseReleased(e -> {

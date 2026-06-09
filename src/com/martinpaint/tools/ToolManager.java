@@ -8,31 +8,41 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-// Tool manager.
+/** Owns all tool instances, wires canvas input listeners, and tracks the active tool. */
 public class ToolManager {
 
     private final CanvasManager canvasManager;
     private final ColorManager  colorManager;
     private final List<Tool>    tools;
-    private final Map<String, Tool> toolsByName = new HashMap<>();
+    private final Map<ToolSpec, Tool> toolsBySpec = new EnumMap<>(ToolSpec.class);
     private final SelectionTool selectionTool;
 
     private final ObjectProperty<Tool> activeTool = new SimpleObjectProperty<>();
+    private Tool gestureTool;
+    private GraphicsContext gestureGc;
 
     public ToolManager(CanvasManager canvasManager, ColorManager colorManager) {
         this.canvasManager = canvasManager;
         this.colorManager  = colorManager;
 
-        selectionTool = new SelectionTool();
-        tools = List.of(new BrushTool(), new PencilTool(), new EraserTool(), new FillTool(),
-                        new EyeDropperTool(), selectionTool, new HandTool(), new ZoomTool());
+        List<Tool> createdTools = new ArrayList<>();
+
+        for (ToolSpec spec : ToolSpec.toolbarOrder()) {
+            Tool tool = spec.createTool();
+            createdTools.add(tool);
+            toolsBySpec.put(spec, tool);
+        }
+
+        tools = List.copyOf(createdTools);
+        selectionTool = (SelectionTool) toolsBySpec.get(ToolSpec.SELECTION);
 
         for (Tool tool : tools) {
-            toolsByName.put(tool.getName(), tool);
+            tool.configure(canvasManager, colorManager);
             // Give every SizedTool a reference to the shared preview canvas.
             if (tool instanceof SizedTool st) {
                 st.setPreviewCanvas(canvasManager.getPreviewCanvas());
@@ -40,13 +50,11 @@ public class ToolManager {
         }
 
         activeTool.set(tools.getFirst());
-        activeTool.get().configure(colorManager);
 
         // Call lifecycle hooks when the active tool changes.
         activeTool.addListener((_, oldTool, newTool) -> {
             if (oldTool != null) oldTool.onDeactivated();
             if (newTool != null) {
-                newTool.configure(colorManager);
                 newTool.onActivated();
             }
         });
@@ -59,8 +67,8 @@ public class ToolManager {
         return selectionTool;
     }
 
-    public void setActiveTool(String name) {
-        Tool tool = toolsByName.get(name);
+    public void setActiveTool(ToolSpec spec) {
+        Tool tool = toolsBySpec.get(spec);
         if (tool != null && tool != activeTool.get()) {
             activeTool.set(tool);
             HapticFeedback.toolSwitch();
@@ -88,29 +96,29 @@ public class ToolManager {
 
     private void attachCanvasListeners() {
         Canvas canvas = canvasManager.getCanvas();
-        GraphicsContext gc = canvasManager.getGraphicsContext();
 
         canvas.setOnMousePressed(event -> {
-            Tool tool = activeTool.get();
-            if (tool == null) return; // No tool selected, do nothing.
-            // These tools don't draw on the canvas; skip undo snapshot for them.
-            if (!(tool instanceof EyeDropperTool) && !(tool instanceof SelectionTool)
-                    && !(tool instanceof HandTool) && !(tool instanceof ZoomTool)) {
-                canvasManager.saveStateForUndo();
+            gestureTool = activeTool.get();
+            if (gestureTool == null) {
+                gestureGc = null;
+                return;
             }
-            tool.onMousePressed(event.getX(), event.getY(), gc);
+            gestureGc = canvasManager.getGraphicsContext();
+            gestureTool.onMousePressed(event.getX(), event.getY(), gestureGc);
         });
 
         canvas.setOnMouseDragged(event -> {
-            Tool tool = activeTool.get();
-            if (tool == null) return;
-            tool.onMouseDragged(event.getX(), event.getY(), gc);
+            if (gestureTool != null) {
+                gestureTool.onMouseDragged(event.getX(), event.getY(), gestureGc);
+            }
         });
 
         canvas.setOnMouseReleased(event -> {
-            Tool tool = activeTool.get();
-            if (tool == null) return;
-            tool.onMouseReleased(event.getX(), event.getY(), gc);
+            if (gestureTool != null) {
+                gestureTool.onMouseReleased(event.getX(), event.getY(), gestureGc);
+                gestureTool = null;
+                gestureGc = null;
+            }
         });
     }
 }
